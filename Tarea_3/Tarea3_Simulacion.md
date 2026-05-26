@@ -1,0 +1,966 @@
+Tarea-Examen 3: Simulación Estocástica
+================
+José Jorge Martínez de la Cruz
+26 de Mayo 2026
+
+``` r
+library(ggplot2)
+set.seed(42)
+```
+
+## Problema 1
+
+Sea $$
+\pi = (0.1,0.2,0.3,0.4)
+$$ la distribución objetivo, con soporte en el conjunto $\{1,2,3,4\}$.
+Partiendo de algún valor inicial $x_0 \in \{1,2,3,4\}$, genera $120$
+valores mediante el algoritmo de Metropolis-Hastings usando como función
+de propuesta la matriz
+
+$$
+Q =
+\begin{pmatrix}
+1/4 & 1/4 & 1/4 & 1/4\\
+1/4 & 1/4 & 1/4 & 1/4\\
+1/4 & 1/4 & 1/4 & 1/4\\
+1/4 & 1/4 & 1/4 & 1/4
+\end{pmatrix}.
+$$
+
+Además, encuentra explícitamente la matriz de transición $P=(P_{ij})$, y
+justifica por qué la cadena es convergente y compara los histogramas:
+$x_1,\ldots,x_{40}$, $x_{41},\ldots,x_{80}$ y $x_{81},\ldots,x_{120}$.
+
+### Solución
+
+Para realizar este ejercicio, recordemos que el algoritmo de
+Metropolis-Hastings permite construir una cadena de Markov cuya
+distribución estacionaria sea una distribución objetivo dada. En este
+problema, la distribución objetivo es discreta y está dada por:
+
+$$
+\pi(1)=0.1, \qquad \pi(2)=0.2, \qquad \pi(3)=0.3, \qquad \pi(4)=0.4.
+$$
+
+La matriz de propuesta $Q$ tiene probabilidades de trancisión uniformes,
+es decir, desde cualquier estado actual $i$, nos vamos a cualquiera de
+los estados $j\in\{1,2,3,4\}$ con probabilidad
+
+$$
+q_{ij}=\frac{1}{4}.
+$$
+
+También notemos que $q_{ij}=q_{ji}$, eso quiere deicr que $Q$ es una
+matríz simétrica así, la probabilidad de aceptación de
+Metropolis-Hastings se simplifica a
+
+$$
+\alpha(i,j)=\min\left\{1,\frac{\pi(j)}{\pi(i)}\right\}.
+$$
+
+Esto significa que si el estado $j$ tiene mayor probabilidad objetivo
+que el estado actual $i$, entonces se acepta automáticamente. En cambio,
+si el estado tiene menor probabilidad objetivo, se acepta con
+probabilidad $\pi(j)/\pi(i)$.
+
+El algorítmo que usaremos es el siguiente:
+
+1.  Se fija un valor inicial $x_0\in\{1,2,3,4\}$.
+2.  Si la cadena está en el estado actual $i$, se propone un estado $j$
+    usando la distribución uniforme en $\{1,2,3,4\}$.
+3.  Se calcula $$
+    \alpha(i,j)=\min\left\{1,\frac{\pi(j)}{\pi(i)}\right\}.
+    $$
+4.  Se genera $U\sim\text{Uniforme}(0,1)$. Si $U<\alpha(i,j)$, se acepta
+    el candidato y $x_t=j$. Si no, se rechaza y $x_t=i$.
+5.  Se repite el procedimiento hasta obtener $120$ valores.
+
+En el código siguiente usamos la semilla $42$ y tomamos $x_0=1$:
+
+``` r
+# semilla 
+set.seed(42)
+
+# Distribución objetivo
+pi_obj <- c(0.1, 0.2, 0.3, 0.4)
+
+# Soporte de la distribución objetivo
+soporte <- 1:4
+
+# Matriz de propuesta Q: desde cualquier estado se propone Uniforme{1,2,3,4}
+Q <- matrix(1/4, nrow = 4, ncol = 4)
+rownames(Q) <- paste0("i=", soporte)
+colnames(Q) <- paste0("j=", soporte) #Nombres
+
+
+n <- 120
+
+# Valor inicial x_0
+x_actual <- 1
+
+# Vector donde guardaremos x_1, ..., x_120
+valores <- numeric(n)
+
+for (t in 1:n) {
+  # Propuesta: como Q es uniforme, elegimos j con probabilidad 1/4
+  j <- sample(x = soporte, size = 1, prob = Q[x_actual, ])
+  
+  # Probabilidad de aceptación de Metropolis-Hastings
+  alpha_ij <- min(1, pi_obj[j] / pi_obj[x_actual])
+  
+  # Paso de aceptación/rechazo
+  if (runif(1) < alpha_ij) {
+    x_actual <- j
+  }
+  
+  # Guardamos el nuevo estado de la cadena
+  valores[t] <- x_actual
+}
+
+# Mostramos los 120 valores generados
+valores
+```
+
+    ##   [1] 1 3 4 4 4 3 1 3 1 3 1 1 2 3 3 4 3 3 2 2 3 3 3 3 3 3 3 3 4 3 4 4 1 3 4 2 2
+    ##  [38] 2 2 4 4 3 3 2 2 4 4 4 3 4 4 2 2 4 4 4 4 4 2 4 3 4 4 4 4 4 4 4 1 1 2 3 4 4
+    ##  [75] 3 4 4 4 2 2 2 4 4 3 2 4 3 3 3 3 3 3 4 4 2 2 2 2 4 4 4 4 2 1 3 4 3 3 4 4 3
+    ## [112] 4 4 3 2 3 3 3 3 4
+
+### Matriz de transición explícita
+
+Ahora construiremos explícitamente la matriz de transición $P=(P_{ij})$
+de la cadena de Markov inducida por Metropolis-Hastings.
+
+Para $i\neq j$, la probabilidad de pasar de $i$ a $j$ está dada por:
+
+$$
+P_{ij}=q_{ij}\alpha(i,j).
+$$
+
+Como $q_{ij}=1/4$, entonces
+
+$$
+P_{ij}=\frac{1}{4}\min\left\{1,\frac{\pi(j)}{\pi(i)}\right\}, \qquad i\neq j.
+$$
+
+La probabilidad diagonal $P_{ii}$ incluye dos posibilidades: que se
+proponga el mismo estado $i$, o que se proponga otro estado y sea
+rechazado. Por tanto,
+
+$$
+P_{ii}=q_{ii}+\sum_{j\neq i}q_{ij}\bigl(1-\alpha(i,j)\bigr).
+$$
+
+Calculando entrada por entrada obtenemos:
+
+$$
+P=
+\begin{pmatrix}
+\frac14 & \frac14 & \frac14 & \frac14\\[3pt]
+\frac18 & \frac38 & \frac14 & \frac14\\[3pt]
+\frac1{12} & \frac16 & \frac12 & \frac14\\[3pt]
+\frac1{16} & \frac18 & \frac3{16} & \frac58
+\end{pmatrix}.
+$$
+
+La cadena es convergente porque cumple las condiciones estándar para una
+cadena finita, irreducible y aperiódica.
+
+Primero, el espacio de estados es finito:
+
+$$
+S=\{1,2,3,4\}.
+$$
+
+Segundo, la cadena es irreducible. En efecto, para cualesquiera
+$i,j\in S$, con $i\neq j$, se tiene
+
+$$
+P_{ij}=\frac{1}{4}\min\left\{1,\frac{\pi(j)}{\pi(i)}\right\}>0,
+$$
+
+porque todas las entradas de $\pi$ son estrictamente positivas. Por
+tanto, desde cualquier estado se puede llegar a cualquier otro estado en
+un solo paso con probabilidad positiva.
+
+Tercero, la cadena es aperiódica. Pues
+
+$$
+P_{11}=\frac14,\qquad P_{22}=\frac38,\qquad P_{33}=\frac12,\qquad P_{44}=\frac58,
+$$
+
+de modo que cada estado tiene probabilidad positiva de permanecer en sí
+mismo. Esto implica que el periodo de cada estado es $1$.
+
+Además, por la construcción de Metropolis-Hastings, la cadena satisface
+balance detallado:
+
+$$
+\pi(i)P_{ij}=\pi(j)P_{ji}, \qquad i,j\in S.
+$$
+
+Por lo tanto, $\pi$ es estacionaria. Como la cadena es finita,
+irreducible y aperiódica, se concluye que
+
+$$
+\lim_{n\to\infty}P^n_{ij}=\pi(j),
+$$
+
+para todo $i,j\in S$. Es decir, la distribución de la cadena converge a
+la distribución objetivo.
+
+Ahora dividimos la muestra generada en tres bloques de tamaño $40$:
+
+$$
+\{x_1,\ldots,x_{40}\}, \qquad \{x_{41},\ldots,x_{80}\}, \qquad \{x_{81},\ldots,x_{120}\}.
+$$
+
+Como cada bloque tiene tamaño $40$, las frecuencias esperadas bajo la
+distribución objetivo son:
+
+$$
+40\pi = 40(0.1,0.2,0.3,0.4)=(4,8,12,16).
+$$
+
+Es decir, si un bloque se parece mucho a la distribución objetivo,
+esperaríamos observar aproximadamente $4$ valores iguales a $1$, $8$
+valores iguales a $2$, $12$ valores iguales a $3$ y $16$ valores iguales
+a $4$.
+
+``` r
+# Construimos un dataframe con los valores simulados y su bloque correspondiente
+datos_mh <- data.frame(
+  iteracion = 1:n,
+  valor = factor(valores, levels = soporte),
+  bloque = rep(c("x1 a x40", "x41 a x80", "x81 a x120"), each = 40)
+)
+```
+
+``` r
+# Función auxiliar para graficar cada bloque
+histograma_bloque <- function(nombre_bloque) {
+  datos_bloque <- subset(datos_mh, bloque == nombre_bloque)
+  
+  ggplot(datos_bloque, aes(x = valor)) +
+    geom_bar(fill = "darkred", color = "red", width = 0.7) +
+    
+    scale_y_continuous(breaks = seq(0, 25, by = 5), limits = c(0, 25)) +
+    labs(
+      title = paste("Histograma del bloque", nombre_bloque),
+      x = "Estado",
+      y = "Frecuencia"
+    ) +
+    theme_minimal()
+}
+
+histograma_bloque("x1 a x40")
+```
+
+![](Tarea3_Simulacion_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+``` r
+histograma_bloque("x41 a x80")
+```
+
+![](Tarea3_Simulacion_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+``` r
+histograma_bloque("x81 a x120")
+```
+
+![](Tarea3_Simulacion_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+Al comparar los tres histogramas, podemos notar que las observaciones
+más tardías se parecen más a $\pi$, porque la cadena ha tenido más
+tiempo para olvidar el valor inicial $x_0$. Esto correspondería al
+periodo del calentamiento. No obstante, como cada bloque tiene solamente
+$40$ observaciones, todavía puede haber variabilidad aleatoria
+considerable. Por esa razón, la última muestra puede verse mejor que las
+anteriores, pero es perfecta.
+
+## Problema 2
+
+Considere el conjunto de datos `Mediciones`, el cual contiene registros
+bivariados de humedad y temperatura. Se observa que existen valores
+faltantes en la variable de temperatura; no obstante, se sabe por el
+mecanismo de recolección que los registros correspondientes a los 5 días
+con mayor temperatura están completos dentro del conjunto.
+
+Construya un algoritmo **EM** para imputar los datos faltantes de
+temperatura.
+
+### Solución
+
+Sea
+
+$$
+X_1 = \text{humedad}, \qquad X_2 = \text{temperatura}.
+$$
+
+Supondremos que el vector aleatorio bivariado
+
+$$
+X = \begin{pmatrix}X_1 \\ X_2\end{pmatrix}
+$$
+
+puede aproximarse mediante una distribución normal bivariada:
+
+$$
+X \sim N_2(\mu, \Sigma),
+$$
+
+donde
+
+$$
+\mu = \begin{pmatrix}\mu_1 \\ \mu_2\end{pmatrix},
+\qquad
+\Sigma =
+\begin{pmatrix}
+\sigma_{11} & \sigma_{12} \\
+\sigma_{21} & \sigma_{22}
+\end{pmatrix}.
+$$
+
+En este problema la humedad está observada para todos los registros,
+pero la temperatura tiene valores faltantes. Por lo tanto, para una fila
+con temperatura faltante, observamos $X_1=x_1$ y queremos imputar $X_2$.
+
+Bajo normalidad bivariada, la distribución condicional de $X_2$ dado
+$X_1=x_1$ es normal, y su esperanza condicional está dada por:
+
+$$
+\mathbb{E}(X_2\mid X_1=x_1)
+= \mu_2 + \frac{\sigma_{21}}{\sigma_{11}}(x_1-\mu_1).
+$$
+
+Además, la varianza condicional está dada por:
+
+$$
+\operatorname{Var}(X_2\mid X_1)
+= \sigma_{22}-\frac{\sigma_{21}^2}{\sigma_{11}}.
+$$
+
+El algoritmo EM no solo debe reemplazar cada dato faltante por su
+esperanza condicional. También debe conservar la varianza asociada a
+esos valores faltantes para no subestimar la varianza.
+
+``` r
+mediciones <- read.csv("Mediciones.csv")
+
+# Revisamos las primeras observaciones
+head(mediciones)
+```
+
+    ##   humedad temperatura
+    ## 1   36.70        53.5
+    ## 2   37.00        51.0
+    ## 3   39.30        39.0
+    ## 4   38.75        42.0
+    ## 5   40.45        47.0
+    ## 6   37.30        44.5
+
+``` r
+#Número de datos faltantes
+colSums(is.na(mediciones))
+```
+
+    ##     humedad temperatura 
+    ##           0          20
+
+``` r
+# Renombramos 
+X1_humedad <- mediciones$humedad
+X2_temperatura_obs <- mediciones$temperatura
+
+n <- length(X1_humedad)
+indices_faltantes <- which(is.na(X2_temperatura_obs))
+indices_observados <- which(!is.na(X2_temperatura_obs))
+
+# Verificamos los 5 valores de temperatura observados.
+
+orden_top_temp <- order(mediciones$temperatura, decreasing = TRUE, na.last = NA) #Usamos order para ordenar
+top_5_temp <- mediciones[orden_top_temp[1:5], ]
+
+top_5_temp
+```
+
+    ##    humedad temperatura
+    ## 82   34.70       117.0
+    ## 68   35.00        94.0
+    ## 85   34.15        92.0
+    ## 25   35.85        90.5
+    ## 70   37.00        88.0
+
+``` r
+ggplot(mediciones, aes(x = humedad, y = temperatura)) +
+  geom_point(size = 2.3, alpha = 0.8, na.rm = TRUE) +
+  labs(
+    title = "Relación observada entre humedad y temperatura",
+    x = "Humedad",
+    y = "Temperatura"  ) +
+  theme_minimal()
+```
+
+![](Tarea3_Simulacion_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+Calculemos la correlación para el paso **E**,la imputación por esperanza
+condicional necesita la relación lineal entre humedad y temperatura
+inducida por el modelo normal bivariado.
+
+``` r
+# Correlación usando únicamente casos completos
+cor_completa <- cor(X1_humedad[indices_observados],
+                    X2_temperatura_obs[indices_observados])
+```
+
+El algoritmo EM alterna dos pasos:
+
+1.  **Paso E**: calcular el valor esperado de las temperaturas faltantes
+    dadas las humedades observadas y los parámetros actuales.
+2.  **Paso M**: actualizar los estimadores de $\mu$ y $\Sigma$ usando
+    los datos completados, pero agregando la corrección de varianza
+    condicional para las temperaturas faltantes.
+
+Tomamos como valores iniciales:
+
+$$
+\mu^{(0)} =
+\begin{pmatrix}
+\bar X_1 \\
+\bar X_{2,obs}
+\end{pmatrix},
+$$ es decir, la media de humedad con todos los datos y la media de
+temperatura con los datos observados. Para la matriz de covarianzas
+inicial usamos solamente los casos completos.
+
+``` r
+# Estimadores iniciales
+# Matriz observable: humedad completa, temperatura con NA
+datos_observados <- cbind(X1_humedad, X2_temperatura_obs)
+
+# Inicialización con casos observados / completos
+mu_est <- c(mean(X1_humedad), mean(X2_temperatura_obs, na.rm = TRUE))
+sigma_est <- cov(datos_observados, use = "complete.obs") * (nrow(datos_observados[complete.cases(datos_observados), ]) - 1) / nrow(datos_observados[complete.cases(datos_observados), ])
+
+
+mu_est
+```
+
+    ## [1] 37.93103 54.55208
+
+``` r
+sigma_est
+```
+
+    ##                    X1_humedad X2_temperatura_obs
+    ## X1_humedad           2.560399          -16.85265
+    ## X2_temperatura_obs -16.852648          265.67437
+
+#### Bucle EM
+
+``` r
+# Parámetros de control del bucle
+tolerancia <- 1e-5
+diferencia <- 1
+iteracion <- 0
+max_iter <- 500
+
+# Guardamos la trayectoria de convergencia para graficarla después
+historial <- data.frame(
+  iteracion = integer(),
+  diferencia = numeric(),
+  mu_humedad = numeric(),
+  mu_temperatura = numeric(),
+  var_humedad = numeric(),
+  cov_hum_temp = numeric(),
+  var_temperatura = numeric()
+)
+
+# Empezamos con una copia de la temperatura observada
+temperatura_imputada <- X2_temperatura_obs
+
+while (diferencia > tolerancia && iteracion < max_iter) {
+  iteracion <- iteracion + 1
+  
+  # Guardamos los parámetros anteriores para medir convergencia
+  mu_ant <- mu_est
+  sigma_ant <- sigma_est
+  
+  # -------------------------------------------------------------
+  # PASO E (Expectation):
+  # Calculamos el valor esperado de los datos faltantes dados los datos 
+  # observados y los parámetros actuales (theta^t).
+  # Para una Normal Bivariada, la distribución condicional X2 | X1 es normal.
+  # -------------------------------------------------------------
+  # Calculamos E[X2 | X1] para cada temperatura faltante.
+  temperatura_imputada <- X2_temperatura_obs
+  
+  beta_condicional <- sigma_est[2, 1] / sigma_est[1, 1]
+  
+  for (i in indices_faltantes) {
+    temperatura_imputada[i] <- mu_est[2] + beta_condicional * (X1_humedad[i] - mu_est[1])
+  }
+  
+  # Varianza condicional Var(X2 | X1)
+  var_condicional <- sigma_est[2, 2] - (sigma_est[2, 1]^2 / sigma_est[1, 1])
+  
+  # ------------------------------------------------------------- 
+  # PASO M (Maximization):
+  # Actualizamos los parámetros (mu, Sigma) maximizando la log-verosimilitud
+  # esperada, usando nuestros datos "completados" estadísticamente.  
+  # -------------------------------------------------------------
+  # Actualizamos la media usando los datos completados.
+  mu_est <- c(mean(X1_humedad), mean(temperatura_imputada))
+  
+  # Actualizamos la matriz de covarianza 
+  datos_imputados_temp <- cbind(X1_humedad, temperatura_imputada)
+  colnames(datos_imputados_temp) <- c("humedad", "temperatura")
+  
+  sigma_est <- cov(datos_imputados_temp) * (n - 1) / n
+  
+  # Corrección EM: agregamos la incertidumbre de los datos faltantes
+  # a la entrada correspondiente a Var(temperatura).
+  proporcion_faltante <- length(indices_faltantes) / n
+  sigma_est[2, 2] <- sigma_est[2, 2] + proporcion_faltante * var_condicional
+  
+  # -------------------------------------------------------------
+  # EVALUACIÓN DE CONVERGENCIA
+  # Medimos la distancia entre los parámetros actuales y los anteriores
+  # -------------------------------------------------------------
+  diferencia <- sum((mu_est - mu_ant)^2) + sum((sigma_est - sigma_ant)^2)
+  
+  historial <- rbind(
+    historial,
+    data.frame(
+      iteracion = iteracion,
+      diferencia = diferencia,
+      mu_humedad = mu_est[1],
+      mu_temperatura = mu_est[2],
+      var_humedad = sigma_est[1, 1],
+      cov_hum_temp = sigma_est[1, 2],
+      var_temperatura = sigma_est[2, 2]
+    )
+  )
+}
+```
+
+``` r
+cat("Convergencia alcanzada en", iteracion, "iteraciones.\n")
+```
+
+    ## Convergencia alcanzada en 9 iteraciones.
+
+``` r
+cat("Diferencia final:", diferencia, "\n\n")
+```
+
+    ## Diferencia final: 4.036085e-06
+
+``` r
+cat("Vector de medias estimado:\n")
+```
+
+    ## Vector de medias estimado:
+
+``` r
+print(round(mu_est, 4))
+```
+
+    ## [1] 37.9310 53.3331
+
+``` r
+cat("\nMatriz de covarianzas estimada:\n")
+```
+
+    ## 
+    ## Matriz de covarianzas estimada:
+
+``` r
+print(round(sigma_est, 4))
+```
+
+    ##              humedad temperatura
+    ## humedad       3.1674    -20.8476
+    ## temperatura -20.8476    291.9686
+
+``` r
+# Dataset final con imputaciones
+mediciones_imputadas <- mediciones
+mediciones_imputadas$temperatura_imputada <- temperatura_imputada
+mediciones_imputadas$tipo <- ifelse(is.na(mediciones$temperatura),
+                                    "Imputada por EM", "Observada")
+
+# Para dejar una sola columna final de temperatura completa
+mediciones_imputadas$temperatura_final <- ifelse(
+  is.na(mediciones_imputadas$temperatura),
+  mediciones_imputadas$temperatura_imputada,
+  mediciones_imputadas$temperatura
+)
+```
+
+``` r
+ggplot(historial, aes(x = iteracion, y = mu_temperatura)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 1.8) +
+  labs(
+    title = "Trayectoria de la media estimada de temperatura",
+    x = "Iteración",
+    y = expression(hat(mu)[temperatura])
+  ) +
+  theme_light()
+```
+
+![](Tarea3_Simulacion_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
+``` r
+ggplot(mediciones_imputadas, aes(x = humedad, y = temperatura_final, color = tipo)) +
+  geom_point(size = 2.4, alpha = 0.85) +
+  labs(
+    title = "Datos completos después de imputar temperatura con EM",
+    x = "Humedad",
+    y = "Temperatura final",
+    color = "Tipo de dato"
+  ) +
+  theme_light()
+```
+
+![](Tarea3_Simulacion_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+
+## Problema 3
+
+Considere un portafolio con un capital inicial $V_0$. Definimos el
+proceso de rendimientos logarítmicos continuos como \$ r_t = () \$ para
+$t \in {1, 2, . . . , T}$ Suponga que los rendimientos conforman una
+muestra aleatoria de tamaño $T$ proveniente de una distribución de
+probabilidad desconocida $F$. Dado que $F$ no asume una forma
+paramétrica específica, utilizaremos la Función de Distribución Empírica
+(FDE), definida como: \$\$
+
+# F_T(x)
+
+*{t=1}^{T} *{{r_t x}}.
+
+\$\$
+
+Resuelva:
+
+### Inciso a): Remuestreo Bootstrap histórico
+
+Sea
+
+$$
+r_1,r_2,\ldots,r_T
+$$
+
+la muestra de rendimientos logarítmicos obtenida en la ventana de
+estimación.
+
+El método de Bootstrap histórico consiste en repetir el siguiente
+procedimiento $B$ veces:
+
+$$
+r_b^* \sim \widehat F_T,
+\qquad b=1,\ldots,B.
+$$
+
+Equivalentemente,
+
+$$
+\mathbb P(r_b^* = r_t) = \frac{1}{T},
+\qquad t=1,\ldots,T.
+$$
+
+Así obtenemos una muestra Bootstrap
+
+$$
+r_1^*,r_2^*,\ldots,r_B^*,
+$$
+
+que representa escenarios simulados de rendimientos futuros bajo la
+hipótesis de que la distribución empírica histórica aproxima
+razonablemente la distribución desconocida $F$.
+
+La justificación teórica es que, si la muestra histórica es
+representativa, entonces
+
+$$
+\widehat F_T(x) \approx F(x)
+$$
+
+para $T$ grande. Por lo tanto, simular desde $$\widehat F_T$$ permite
+aproximar la incertidumbre asociada a la distribución real $F$, sin
+imponer una forma paramétrica.
+
+### Inciso b): Estimación del VaR
+
+Para un nivel de significancia $\alpha \in (0,1)$, el rendimiento
+crítico se define como el cuantil inferior de orden $\alpha$. En
+términos de la distribución de los rendimientos,
+
+$$
+r_c = F^{-1}(\alpha).
+$$
+
+Como $F$ es desconocida, usamos la muestra Bootstrap. El estimador del
+rendimiento crítico es
+
+$$
+\widehat r_c
+=
+\inf\left\{
+x:
+\widehat F_B^*(x)\geq \alpha
+\right\},
+$$
+
+donde
+
+$$
+\widehat F_B^*(x)
+=
+\frac{1}{B}
+\sum_{b=1}^{B}
+\mathbf 1_{\{r_b^*\leq x\}}.
+$$
+
+Si el rendimiento logarítmico del día siguiente fuera $r$, entonces el
+valor futuro del portafolio sería
+
+$$
+V_1 = V_0 e^r.
+$$
+
+La ganancia o pérdida monetaria del portafolio es
+
+$$
+\text{PnL}
+=
+V_1 - V_0
+=
+V_0(e^r-1).
+$$
+
+Si $\widehat r_c$ es negativo, representa un rendimiento extremo
+adverso. La pérdida monetaria asociada es
+
+$$
+V_0 - V_0 e^{\widehat r_c}
+=
+V_0(1-e^{\widehat r_c}).
+$$
+
+Por tanto, el VaR monetario estimado es
+
+$$
+\widehat{\text{VaR}}_{\text{USD}}
+=
+V_0(1-e^{\widehat r_c}).
+$$
+
+Este número se interpreta como una pérdida máxima esperada bajo un nivel
+de confianza $1-\alpha$. Por ejemplo, si $\alpha=0.05$, se está
+estimando una pérdida que solo debería ser excedida aproximadamente el
+$5\%$ de las veces.
+
+### Inciso c): Implementación computacional
+
+``` r
+set.seed(42)
+MSFT_close <- read.csv("MSF_close.csv")
+```
+
+El archivo contiene precios ajustados de cierre. La columna `Adj_close`
+se toma como la serie de precios $P_t$.
+
+``` r
+# Convertimos la fecha y nos aseguramos de que el precio sea numérico
+MSFT_close$Fecha <- as.Date(MSFT_close$Fecha)
+MSFT_close$Adj_close <- as.numeric(MSFT_close$Adj_close)
+
+
+# Parámetros del problema
+V0 <- 1000
+B <- 10000
+alpha <- 0.05
+
+# Ventana de estimación: primeros 252 precios
+datos_estimacion <- MSFT_close[1:252, ]
+
+# Ventana fuera de muestra: siguientes 10 precios
+datos_validacion <- MSFT_close[253:262, ]
+```
+
+Se van a generar $251$ rendimientos internos de estimación. Para la
+validación se calculan $10$ rendimientos fuera de muestra usando como
+base el último precio de estimación y los $10$ precios posteriores.
+
+``` r
+# Rendimientos de estimación:
+# r_t = log(P_t / P_{t-1}) usando los primeros 252 precios
+r_estimacion <- diff(log(datos_estimacion$Adj_close))
+
+# Rendimientos de validación:
+# Se usan los precios desde el último precio de estimación hasta cada precio posterior.
+precios_base_validacion <- MSFT_close$Adj_close[252:261]
+
+precios_validacion <- MSFT_close$Adj_close[253:262]
+
+r_validacion <- log(precios_validacion / precios_base_validacion)
+
+tabla_resumen_r <- data.frame(
+  Muestra = c("Estimación", "Validación"),
+  Numero_de_rendimientos = c(length(r_estimacion), length(r_validacion))
+)
+
+tabla_resumen_r
+```
+
+    ##      Muestra Numero_de_rendimientos
+    ## 1 Estimación                    251
+    ## 2 Validación                     10
+
+``` r
+df_rend <- data.frame(
+  Fecha = MSFT_close$Fecha[2:252],
+  Rendimiento = r_estimacion
+)
+
+ggplot(df_rend, aes(x = Fecha, y = Rendimiento)) +
+  geom_line(color = "blue") +
+  geom_hline(yintercept = 0, linetype = "dashed") +
+  labs(
+    title = "Rendimientos logarítmicos de MSFT en la ventana de estimación",
+    x = "Fecha",
+    y = expression(r[t])
+  ) +
+  theme_minimal()
+```
+
+![](Tarea3_Simulacion_files/figure-gfm/grafica-rendimientos-1.png)<!-- -->
+
+``` r
+set.seed(42)
+
+# Bootstrap histórico:
+# cada escenario r_b^* se obtiene remuestreando con reemplazo
+# de los rendimientos observados en la ventana de estimación.
+r_boot <- sample( x = r_estimacion, size = B, replace = TRUE)
+
+#  cuantil alpha de la muestra bootstrap.
+
+r_c_hat <- as.numeric(quantile(r_boot, probs = alpha, type = 1))# type = 1 corresponde a la inversa empírica escalonada.
+
+# VaR monetario
+VaR_USD <- V0 * (1 - exp(r_c_hat))
+
+resultados_var <- data.frame(
+  Capital_inicial = V0,
+  B = B,
+  alpha = alpha,
+  Rendimiento_critico = r_c_hat,
+  VaR_USD = VaR_USD
+)
+
+resultados_var
+```
+
+    ##   Capital_inicial     B alpha Rendimiento_critico  VaR_USD
+    ## 1            1000 10000  0.05         -0.02427944 23.98707
+
+La estimación obtenida fue
+
+$$
+\widehat r_c =
+-0.024279.
+$$
+
+Por tanto,
+
+$$
+\widehat{\text{VaR}}_{\text{USD}}
+=
+23.9871
+\text{ USD}.
+$$
+
+Esto significa que, con nivel de confianza aproximado del $95\%$, la
+pérdida diaria del portafolio no debería exceder aproximadamente 23.99
+dólares bajo el modelo histórico Bootstrap.
+
+# Backtesting
+
+Para cada día de validación se calcula el PnL real mediante
+
+$$
+\text{PnL}_t
+=
+V_0(e^{r_t}-1).
+$$
+
+Hay una excepción si la pérdida real supera el VaR estimado. Es decir,
+
+$$
+I_t
+=
+\mathbf 1_{\{\text{PnL}_t < -\widehat{\text{VaR}}_{\text{USD}}\}}.
+$$
+
+Equivalentemente, como la función exponencial es creciente, también se
+puede escribir
+
+$$
+I_t
+=
+\mathbf 1_{\{r_t < \widehat r_c\}}.
+$$
+
+``` r
+VaR_USD <- V0 * (1 - exp(r_c_hat))
+
+PnL_validacion <- V0 * (exp(r_validacion) - 1)
+
+I_t <- as.integer(PnL_validacion < -VaR_USD)
+
+X_obs <- sum(I_t)
+E_X <- 10 * alpha
+```
+
+Bajo una calibración correcta del VaR, cada día fuera de muestra tiene
+probabilidad aproximada $\alpha$ de producir una excepción. Si suponemos
+independencia aproximada entre días de validación, entonces el número
+total de excepciones
+
+$$
+X = \sum_{t=T+1}^{T+10} I_t
+$$
+
+puede modelarse aproximadamente como
+
+$$
+X \sim \text{Binomial}(10,\alpha).
+$$
+
+Por tanto,
+
+$$
+\mathbb E[X]
+=
+10\alpha
+=
+10(0.05)
+=
+0.5.
+$$
+
+En esta muestra se observaron
+
+$$
+X_{\text{obs}} =
+2
+$$
+
+excepciones. El valor esperado bajo el modelo era
+
+$$
+\mathbb E[X] =
+0.5.
+$$
