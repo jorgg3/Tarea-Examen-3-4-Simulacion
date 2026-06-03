@@ -1,0 +1,1187 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Tarea-Examen 3: Simulación Estocástica},
+  pdfauthor={José Jorge Martínez de la Cruz},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Tarea-Examen 3: Simulación Estocástica}
+\author{José Jorge Martínez de la Cruz}
+\date{26 de Mayo 2026}
+
+\begin{document}
+\maketitle
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(ggplot2)}
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{42}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Problema 1}\label{problema-1}
+
+Sea \[
+\pi = (0.1,0.2,0.3,0.4)
+\] la distribución objetivo, con soporte en el conjunto \(\{1,2,3,4\}\).
+Partiendo de algún valor inicial \(x_0 \in \{1,2,3,4\}\), genera \(120\)
+valores mediante el algoritmo de Metropolis-Hastings usando como función
+de propuesta la matriz
+
+\[
+Q =
+\begin{pmatrix}
+1/4 & 1/4 & 1/4 & 1/4\\
+1/4 & 1/4 & 1/4 & 1/4\\
+1/4 & 1/4 & 1/4 & 1/4\\
+1/4 & 1/4 & 1/4 & 1/4
+\end{pmatrix}.
+\]
+
+Además, encuentra explícitamente la matriz de transición \(P=(P_{ij})\),
+y justifica por qué la cadena es convergente y compara los histogramas:
+\(x_1,\ldots,x_{40}\), \(x_{41},\ldots,x_{80}\) y
+\(x_{81},\ldots,x_{120}\).
+
+\subsubsection{Solución}\label{soluciuxf3n}
+
+Para realizar este ejercicio, recordemos que el algoritmo de
+Metropolis-Hastings permite construir una cadena de Markov cuya
+distribución estacionaria sea una distribución objetivo dada. En este
+problema, la distribución objetivo es discreta y está dada por:
+
+\[
+\pi(1)=0.1, \qquad \pi(2)=0.2, \qquad \pi(3)=0.3, \qquad \pi(4)=0.4.
+\]
+
+La matriz de propuesta \(Q\) tiene probabilidades de trancisión
+uniformes, es decir, desde cualquier estado actual \(i\), nos vamos a
+cualquiera de los estados \(j\in\{1,2,3,4\}\) con probabilidad
+
+\[
+q_{ij}=\frac{1}{4}.
+\]
+
+También notemos que \(q_{ij}=q_{ji}\), eso quiere deicr que \(Q\) es una
+matríz simétrica así, la probabilidad de aceptación de
+Metropolis-Hastings se simplifica a
+
+\[
+\alpha(i,j)=\min\left\{1,\frac{\pi(j)}{\pi(i)}\right\}.
+\]
+
+Esto significa que si el estado \(j\) tiene mayor probabilidad objetivo
+que el estado actual \(i\), entonces se acepta automáticamente. En
+cambio, si el estado tiene menor probabilidad objetivo, se acepta con
+probabilidad \(\pi(j)/\pi(i)\).
+
+El algorítmo que usaremos es el siguiente:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Se fija un valor inicial \(x_0\in\{1,2,3,4\}\).
+\item
+  Si la cadena está en el estado actual \(i\), se propone un estado
+  \(j\) usando la distribución uniforme en \(\{1,2,3,4\}\).
+\item
+  Se calcula \[
+  \alpha(i,j)=\min\left\{1,\frac{\pi(j)}{\pi(i)}\right\}.
+  \]
+\item
+  Se genera \(U\sim\text{Uniforme}(0,1)\). Si \(U<\alpha(i,j)\), se
+  acepta el candidato y \(x_t=j\). Si no, se rechaza y \(x_t=i\).
+\item
+  Se repite el procedimiento hasta obtener \(120\) valores.
+\end{enumerate}
+
+En el código siguiente usamos la semilla \(42\) y tomamos \(x_0=1\):
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# semilla }
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{42}\NormalTok{)}
+
+\CommentTok{\# Distribución objetivo}
+\NormalTok{pi\_obj }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\FloatTok{0.1}\NormalTok{, }\FloatTok{0.2}\NormalTok{, }\FloatTok{0.3}\NormalTok{, }\FloatTok{0.4}\NormalTok{)}
+
+\CommentTok{\# Soporte de la distribución objetivo}
+\NormalTok{soporte }\OtherTok{\textless{}{-}} \DecValTok{1}\SpecialCharTok{:}\DecValTok{4}
+
+\CommentTok{\# Matriz de propuesta Q: desde cualquier estado se propone Uniforme\{1,2,3,4\}}
+\NormalTok{Q }\OtherTok{\textless{}{-}} \FunctionTok{matrix}\NormalTok{(}\DecValTok{1}\SpecialCharTok{/}\DecValTok{4}\NormalTok{, }\AttributeTok{nrow =} \DecValTok{4}\NormalTok{, }\AttributeTok{ncol =} \DecValTok{4}\NormalTok{)}
+\FunctionTok{rownames}\NormalTok{(Q) }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(}\StringTok{"i="}\NormalTok{, soporte)}
+\FunctionTok{colnames}\NormalTok{(Q) }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(}\StringTok{"j="}\NormalTok{, soporte) }\CommentTok{\#Nombres}
+
+
+\NormalTok{n }\OtherTok{\textless{}{-}} \DecValTok{120}
+
+\CommentTok{\# Valor inicial x\_0}
+\NormalTok{x\_actual }\OtherTok{\textless{}{-}} \DecValTok{1}
+
+\CommentTok{\# Vector donde guardaremos x\_1, ..., x\_120}
+\NormalTok{valores }\OtherTok{\textless{}{-}} \FunctionTok{numeric}\NormalTok{(n)}
+
+\ControlFlowTok{for}\NormalTok{ (t }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\NormalTok{n) \{}
+  \CommentTok{\# Propuesta: como Q es uniforme, elegimos j con probabilidad 1/4}
+\NormalTok{  j }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{(}\AttributeTok{x =}\NormalTok{ soporte, }\AttributeTok{size =} \DecValTok{1}\NormalTok{, }\AttributeTok{prob =}\NormalTok{ Q[x\_actual, ])}
+  
+  \CommentTok{\# Probabilidad de aceptación de Metropolis{-}Hastings}
+\NormalTok{  alpha\_ij }\OtherTok{\textless{}{-}} \FunctionTok{min}\NormalTok{(}\DecValTok{1}\NormalTok{, pi\_obj[j] }\SpecialCharTok{/}\NormalTok{ pi\_obj[x\_actual])}
+  
+  \CommentTok{\# Paso de aceptación/rechazo}
+  \ControlFlowTok{if}\NormalTok{ (}\FunctionTok{runif}\NormalTok{(}\DecValTok{1}\NormalTok{) }\SpecialCharTok{\textless{}}\NormalTok{ alpha\_ij) \{}
+\NormalTok{    x\_actual }\OtherTok{\textless{}{-}}\NormalTok{ j}
+\NormalTok{  \}}
+  
+  \CommentTok{\# Guardamos el nuevo estado de la cadena}
+\NormalTok{  valores[t] }\OtherTok{\textless{}{-}}\NormalTok{ x\_actual}
+\NormalTok{\}}
+
+\CommentTok{\# Mostramos los 120 valores generados}
+\NormalTok{valores}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   [1] 1 3 4 4 4 3 1 3 1 3 1 1 2 3 3 4 3 3 2 2 3 3 3 3 3 3 3 3 4 3 4 4 1 3 4 2 2
+##  [38] 2 2 4 4 3 3 2 2 4 4 4 3 4 4 2 2 4 4 4 4 4 2 4 3 4 4 4 4 4 4 4 1 1 2 3 4 4
+##  [75] 3 4 4 4 2 2 2 4 4 3 2 4 3 3 3 3 3 3 4 4 2 2 2 2 4 4 4 4 2 1 3 4 3 3 4 4 3
+## [112] 4 4 3 2 3 3 3 3 4
+\end{verbatim}
+
+\subsubsection{Matriz de transición
+explícita}\label{matriz-de-transiciuxf3n-expluxedcita}
+
+Ahora construiremos explícitamente la matriz de transición
+\(P=(P_{ij})\) de la cadena de Markov inducida por Metropolis-Hastings.
+
+Para \(i\neq j\), la probabilidad de pasar de \(i\) a \(j\) está dada
+por:
+
+\[
+P_{ij}=q_{ij}\alpha(i,j).
+\]
+
+Como \(q_{ij}=1/4\), entonces
+
+\[
+P_{ij}=\frac{1}{4}\min\left\{1,\frac{\pi(j)}{\pi(i)}\right\}, \qquad i\neq j.
+\]
+
+La probabilidad diagonal \(P_{ii}\) incluye dos posibilidades: que se
+proponga el mismo estado \(i\), o que se proponga otro estado y sea
+rechazado. Por tanto,
+
+\[
+P_{ii}=q_{ii}+\sum_{j\neq i}q_{ij}\bigl(1-\alpha(i,j)\bigr).
+\]
+
+Calculando entrada por entrada obtenemos:
+
+\[
+P=
+\begin{pmatrix}
+\frac14 & \frac14 & \frac14 & \frac14\\[3pt]
+\frac18 & \frac38 & \frac14 & \frac14\\[3pt]
+\frac1{12} & \frac16 & \frac12 & \frac14\\[3pt]
+\frac1{16} & \frac18 & \frac3{16} & \frac58
+\end{pmatrix}.
+\]
+
+La cadena es convergente porque cumple las condiciones estándar para una
+cadena finita, irreducible y aperiódica.
+
+Primero, el espacio de estados es finito:
+
+\[
+S=\{1,2,3,4\}.
+\]
+
+Segundo, la cadena es irreducible. En efecto, para cualesquiera
+\(i,j\in S\), con \(i\neq j\), se tiene
+
+\[
+P_{ij}=\frac{1}{4}\min\left\{1,\frac{\pi(j)}{\pi(i)}\right\}>0,
+\]
+
+porque todas las entradas de \(\pi\) son estrictamente positivas. Por
+tanto, desde cualquier estado se puede llegar a cualquier otro estado en
+un solo paso con probabilidad positiva.
+
+Tercero, la cadena es aperiódica. Pues
+
+\[
+P_{11}=\frac14,\qquad P_{22}=\frac38,\qquad P_{33}=\frac12,\qquad P_{44}=\frac58,
+\]
+
+de modo que cada estado tiene probabilidad positiva de permanecer en sí
+mismo. Esto implica que el periodo de cada estado es \(1\).
+
+Además, por la construcción de Metropolis-Hastings, la cadena satisface
+balance detallado:
+
+\[
+\pi(i)P_{ij}=\pi(j)P_{ji}, \qquad i,j\in S.
+\]
+
+Por lo tanto, \(\pi\) es estacionaria. Como la cadena es finita,
+irreducible y aperiódica, se concluye que
+
+\[
+\lim_{n\to\infty}P^n_{ij}=\pi(j),
+\]
+
+para todo \(i,j\in S\). Es decir, la distribución de la cadena converge
+a la distribución objetivo.
+
+Ahora dividimos la muestra generada en tres bloques de tamaño \(40\):
+
+\[
+\{x_1,\ldots,x_{40}\}, \qquad \{x_{41},\ldots,x_{80}\}, \qquad \{x_{81},\ldots,x_{120}\}.
+\]
+
+Como cada bloque tiene tamaño \(40\), las frecuencias esperadas bajo la
+distribución objetivo son:
+
+\[
+40\pi = 40(0.1,0.2,0.3,0.4)=(4,8,12,16).
+\]
+
+Es decir, si un bloque se parece mucho a la distribución objetivo,
+esperaríamos observar aproximadamente \(4\) valores iguales a \(1\),
+\(8\) valores iguales a \(2\), \(12\) valores iguales a \(3\) y \(16\)
+valores iguales a \(4\).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Construimos un dataframe con los valores simulados y su bloque correspondiente}
+\NormalTok{datos\_mh }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{iteracion =} \DecValTok{1}\SpecialCharTok{:}\NormalTok{n,}
+  \AttributeTok{valor =} \FunctionTok{factor}\NormalTok{(valores, }\AttributeTok{levels =}\NormalTok{ soporte),}
+  \AttributeTok{bloque =} \FunctionTok{rep}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"x1 a x40"}\NormalTok{, }\StringTok{"x41 a x80"}\NormalTok{, }\StringTok{"x81 a x120"}\NormalTok{), }\AttributeTok{each =} \DecValTok{40}\NormalTok{)}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Función auxiliar para graficar cada bloque}
+\NormalTok{histograma\_bloque }\OtherTok{\textless{}{-}} \ControlFlowTok{function}\NormalTok{(nombre\_bloque) \{}
+\NormalTok{  datos\_bloque }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(datos\_mh, bloque }\SpecialCharTok{==}\NormalTok{ nombre\_bloque)}
+  
+  \FunctionTok{ggplot}\NormalTok{(datos\_bloque, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ valor)) }\SpecialCharTok{+}
+    \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{fill =} \StringTok{"darkred"}\NormalTok{, }\AttributeTok{color =} \StringTok{"red"}\NormalTok{, }\AttributeTok{width =} \FloatTok{0.7}\NormalTok{) }\SpecialCharTok{+}
+    
+    \FunctionTok{scale\_y\_continuous}\NormalTok{(}\AttributeTok{breaks =} \FunctionTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{25}\NormalTok{, }\AttributeTok{by =} \DecValTok{5}\NormalTok{), }\AttributeTok{limits =} \FunctionTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{25}\NormalTok{)) }\SpecialCharTok{+}
+    \FunctionTok{labs}\NormalTok{(}
+      \AttributeTok{title =} \FunctionTok{paste}\NormalTok{(}\StringTok{"Histograma del bloque"}\NormalTok{, nombre\_bloque),}
+      \AttributeTok{x =} \StringTok{"Estado"}\NormalTok{,}
+      \AttributeTok{y =} \StringTok{"Frecuencia"}
+\NormalTok{    ) }\SpecialCharTok{+}
+    \FunctionTok{theme\_minimal}\NormalTok{()}
+\NormalTok{\}}
+
+\FunctionTok{histograma\_bloque}\NormalTok{(}\StringTok{"x1 a x40"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Tarea3_Simulacion_files/figure-latex/unnamed-chunk-4-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{histograma\_bloque}\NormalTok{(}\StringTok{"x41 a x80"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Tarea3_Simulacion_files/figure-latex/unnamed-chunk-5-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{histograma\_bloque}\NormalTok{(}\StringTok{"x81 a x120"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Tarea3_Simulacion_files/figure-latex/unnamed-chunk-6-1.pdf}}
+
+Al comparar los tres histogramas, podemos notar que las observaciones
+más tardías se parecen más a \(\pi\), porque la cadena ha tenido más
+tiempo para olvidar el valor inicial \(x_0\). Esto correspondería al
+periodo del calentamiento. No obstante, como cada bloque tiene solamente
+\(40\) observaciones, todavía puede haber variabilidad aleatoria
+considerable. Por esa razón, la última muestra puede verse mejor que las
+anteriores, pero es perfecta.
+
+\subsection{Problema 2}\label{problema-2}
+
+Considere el conjunto de datos \texttt{Mediciones}, el cual contiene
+registros bivariados de humedad y temperatura. Se observa que existen
+valores faltantes en la variable de temperatura; no obstante, se sabe
+por el mecanismo de recolección que los registros correspondientes a los
+5 días con mayor temperatura están completos dentro del conjunto.
+
+Construya un algoritmo \textbf{EM} para imputar los datos faltantes de
+temperatura.
+
+\subsubsection{Solución}\label{soluciuxf3n-1}
+
+Sea
+
+\[
+X_1 = \text{humedad}, \qquad X_2 = \text{temperatura}.
+\]
+
+Supondremos que el vector aleatorio bivariado
+
+\[
+X = \begin{pmatrix}X_1 \\ X_2\end{pmatrix}
+\]
+
+puede aproximarse mediante una distribución normal bivariada:
+
+\[
+X \sim N_2(\mu, \Sigma),
+\]
+
+donde
+
+\[
+\mu = \begin{pmatrix}\mu_1 \\ \mu_2\end{pmatrix},
+\qquad
+\Sigma =
+\begin{pmatrix}
+\sigma_{11} & \sigma_{12} \\
+\sigma_{21} & \sigma_{22}
+\end{pmatrix}.
+\]
+
+En este problema la humedad está observada para todos los registros,
+pero la temperatura tiene valores faltantes. Por lo tanto, para una fila
+con temperatura faltante, observamos \(X_1=x_1\) y queremos imputar
+\(X_2\).
+
+Bajo normalidad bivariada, la distribución condicional de \(X_2\) dado
+\(X_1=x_1\) es normal, y su esperanza condicional está dada por:
+
+\[
+\mathbb{E}(X_2\mid X_1=x_1)
+= \mu_2 + \frac{\sigma_{21}}{\sigma_{11}}(x_1-\mu_1).
+\]
+
+Además, la varianza condicional está dada por:
+
+\[
+\operatorname{Var}(X_2\mid X_1)
+= \sigma_{22}-\frac{\sigma_{21}^2}{\sigma_{11}}.
+\]
+
+El algoritmo EM no solo debe reemplazar cada dato faltante por su
+esperanza condicional. También debe conservar la varianza asociada a
+esos valores faltantes para no subestimar la varianza.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{mediciones }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"Mediciones.csv"}\NormalTok{)}
+
+\CommentTok{\# Revisamos las primeras observaciones}
+\FunctionTok{head}\NormalTok{(mediciones)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   humedad temperatura
+## 1   36.70        53.5
+## 2   37.00        51.0
+## 3   39.30        39.0
+## 4   38.75        42.0
+## 5   40.45        47.0
+## 6   37.30        44.5
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#Número de datos faltantes}
+\FunctionTok{colSums}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(mediciones))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##     humedad temperatura 
+##           0          20
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Renombramos }
+\NormalTok{X1\_humedad }\OtherTok{\textless{}{-}}\NormalTok{ mediciones}\SpecialCharTok{$}\NormalTok{humedad}
+\NormalTok{X2\_temperatura\_obs }\OtherTok{\textless{}{-}}\NormalTok{ mediciones}\SpecialCharTok{$}\NormalTok{temperatura}
+
+\NormalTok{n }\OtherTok{\textless{}{-}} \FunctionTok{length}\NormalTok{(X1\_humedad)}
+\NormalTok{indices\_faltantes }\OtherTok{\textless{}{-}} \FunctionTok{which}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(X2\_temperatura\_obs))}
+\NormalTok{indices\_observados }\OtherTok{\textless{}{-}} \FunctionTok{which}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(X2\_temperatura\_obs))}
+
+\CommentTok{\# Verificamos los 5 valores de temperatura observados.}
+
+\NormalTok{orden\_top\_temp }\OtherTok{\textless{}{-}} \FunctionTok{order}\NormalTok{(mediciones}\SpecialCharTok{$}\NormalTok{temperatura, }\AttributeTok{decreasing =} \ConstantTok{TRUE}\NormalTok{, }\AttributeTok{na.last =} \ConstantTok{NA}\NormalTok{) }\CommentTok{\#Usamos order para ordenar}
+\NormalTok{top\_5\_temp }\OtherTok{\textless{}{-}}\NormalTok{ mediciones[orden\_top\_temp[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{5}\NormalTok{], ]}
+
+\NormalTok{top\_5\_temp}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##    humedad temperatura
+## 82   34.70       117.0
+## 68   35.00        94.0
+## 85   34.15        92.0
+## 25   35.85        90.5
+## 70   37.00        88.0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(mediciones, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ humedad, }\AttributeTok{y =}\NormalTok{ temperatura)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{size =} \FloatTok{2.3}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.8}\NormalTok{, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Relación observada entre humedad y temperatura"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Humedad"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Temperatura"}\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Tarea3_Simulacion_files/figure-latex/unnamed-chunk-9-1.pdf}}
+Calculemos la correlación para el paso \textbf{E},la imputación por
+esperanza condicional necesita la relación lineal entre humedad y
+temperatura inducida por el modelo normal bivariado.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Correlación usando únicamente casos completos}
+\NormalTok{cor\_completa }\OtherTok{\textless{}{-}} \FunctionTok{cor}\NormalTok{(X1\_humedad[indices\_observados],}
+\NormalTok{                    X2\_temperatura\_obs[indices\_observados])}
+\end{Highlighting}
+\end{Shaded}
+
+El algoritmo EM alterna dos pasos:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Paso E}: calcular el valor esperado de las temperaturas
+  faltantes dadas las humedades observadas y los parámetros actuales.
+\item
+  \textbf{Paso M}: actualizar los estimadores de \(\mu\) y \(\Sigma\)
+  usando los datos completados, pero agregando la corrección de varianza
+  condicional para las temperaturas faltantes.
+\end{enumerate}
+
+Tomamos como valores iniciales:
+
+\[
+\mu^{(0)} =
+\begin{pmatrix}
+\bar X_1 \\
+\bar X_{2,obs}
+\end{pmatrix},
+\] es decir, la media de humedad con todos los datos y la media de
+temperatura con los datos observados. Para la matriz de covarianzas
+inicial usamos solamente los casos completos.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Estimadores iniciales}
+\CommentTok{\# Matriz observable: humedad completa, temperatura con NA}
+\NormalTok{datos\_observados }\OtherTok{\textless{}{-}} \FunctionTok{cbind}\NormalTok{(X1\_humedad, X2\_temperatura\_obs)}
+
+\CommentTok{\# Inicialización con casos observados / completos}
+\NormalTok{mu\_est }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\FunctionTok{mean}\NormalTok{(X1\_humedad), }\FunctionTok{mean}\NormalTok{(X2\_temperatura\_obs, }\AttributeTok{na.rm =} \ConstantTok{TRUE}\NormalTok{))}
+\NormalTok{sigma\_est }\OtherTok{\textless{}{-}} \FunctionTok{cov}\NormalTok{(datos\_observados, }\AttributeTok{use =} \StringTok{"complete.obs"}\NormalTok{) }\SpecialCharTok{*}\NormalTok{ (}\FunctionTok{nrow}\NormalTok{(datos\_observados[}\FunctionTok{complete.cases}\NormalTok{(datos\_observados), ]) }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{) }\SpecialCharTok{/} \FunctionTok{nrow}\NormalTok{(datos\_observados[}\FunctionTok{complete.cases}\NormalTok{(datos\_observados), ])}
+
+
+\NormalTok{mu\_est}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 37.93103 54.55208
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sigma\_est}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                    X1_humedad X2_temperatura_obs
+## X1_humedad           2.560399          -16.85265
+## X2_temperatura_obs -16.852648          265.67437
+\end{verbatim}
+
+\paragraph{Bucle EM}\label{bucle-em}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Parámetros de control del bucle}
+\NormalTok{tolerancia }\OtherTok{\textless{}{-}} \FloatTok{1e{-}5}
+\NormalTok{diferencia }\OtherTok{\textless{}{-}} \DecValTok{1}
+\NormalTok{iteracion }\OtherTok{\textless{}{-}} \DecValTok{0}
+\NormalTok{max\_iter }\OtherTok{\textless{}{-}} \DecValTok{500}
+
+\CommentTok{\# Guardamos la trayectoria de convergencia para graficarla después}
+\NormalTok{historial }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{iteracion =} \FunctionTok{integer}\NormalTok{(),}
+  \AttributeTok{diferencia =} \FunctionTok{numeric}\NormalTok{(),}
+  \AttributeTok{mu\_humedad =} \FunctionTok{numeric}\NormalTok{(),}
+  \AttributeTok{mu\_temperatura =} \FunctionTok{numeric}\NormalTok{(),}
+  \AttributeTok{var\_humedad =} \FunctionTok{numeric}\NormalTok{(),}
+  \AttributeTok{cov\_hum\_temp =} \FunctionTok{numeric}\NormalTok{(),}
+  \AttributeTok{var\_temperatura =} \FunctionTok{numeric}\NormalTok{()}
+\NormalTok{)}
+
+\CommentTok{\# Empezamos con una copia de la temperatura observada}
+\NormalTok{temperatura\_imputada }\OtherTok{\textless{}{-}}\NormalTok{ X2\_temperatura\_obs}
+
+\ControlFlowTok{while}\NormalTok{ (diferencia }\SpecialCharTok{\textgreater{}}\NormalTok{ tolerancia }\SpecialCharTok{\&\&}\NormalTok{ iteracion }\SpecialCharTok{\textless{}}\NormalTok{ max\_iter) \{}
+\NormalTok{  iteracion }\OtherTok{\textless{}{-}}\NormalTok{ iteracion }\SpecialCharTok{+} \DecValTok{1}
+  
+  \CommentTok{\# Guardamos los parámetros anteriores para medir convergencia}
+\NormalTok{  mu\_ant }\OtherTok{\textless{}{-}}\NormalTok{ mu\_est}
+\NormalTok{  sigma\_ant }\OtherTok{\textless{}{-}}\NormalTok{ sigma\_est}
+  
+  \CommentTok{\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+  \CommentTok{\# PASO E (Expectation):}
+  \CommentTok{\# Calculamos el valor esperado de los datos faltantes dados los datos }
+  \CommentTok{\# observados y los parámetros actuales (theta\^{}t).}
+  \CommentTok{\# Para una Normal Bivariada, la distribución condicional X2 | X1 es normal.}
+  \CommentTok{\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+  \CommentTok{\# Calculamos E[X2 | X1] para cada temperatura faltante.}
+\NormalTok{  temperatura\_imputada }\OtherTok{\textless{}{-}}\NormalTok{ X2\_temperatura\_obs}
+  
+\NormalTok{  beta\_condicional }\OtherTok{\textless{}{-}}\NormalTok{ sigma\_est[}\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{] }\SpecialCharTok{/}\NormalTok{ sigma\_est[}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{]}
+  
+  \ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in}\NormalTok{ indices\_faltantes) \{}
+\NormalTok{    temperatura\_imputada[i] }\OtherTok{\textless{}{-}}\NormalTok{ mu\_est[}\DecValTok{2}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ beta\_condicional }\SpecialCharTok{*}\NormalTok{ (X1\_humedad[i] }\SpecialCharTok{{-}}\NormalTok{ mu\_est[}\DecValTok{1}\NormalTok{])}
+\NormalTok{  \}}
+  
+  \CommentTok{\# Varianza condicional Var(X2 | X1)}
+\NormalTok{  var\_condicional }\OtherTok{\textless{}{-}}\NormalTok{ sigma\_est[}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{] }\SpecialCharTok{{-}}\NormalTok{ (sigma\_est[}\DecValTok{2}\NormalTok{, }\DecValTok{1}\NormalTok{]}\SpecialCharTok{\^{}}\DecValTok{2} \SpecialCharTok{/}\NormalTok{ sigma\_est[}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{])}
+  
+  \CommentTok{\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-} }
+  \CommentTok{\# PASO M (Maximization):}
+  \CommentTok{\# Actualizamos los parámetros (mu, Sigma) maximizando la log{-}verosimilitud}
+  \CommentTok{\# esperada, usando nuestros datos "completados" estadísticamente.  }
+  \CommentTok{\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+  \CommentTok{\# Actualizamos la media usando los datos completados.}
+\NormalTok{  mu\_est }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\FunctionTok{mean}\NormalTok{(X1\_humedad), }\FunctionTok{mean}\NormalTok{(temperatura\_imputada))}
+  
+  \CommentTok{\# Actualizamos la matriz de covarianza }
+\NormalTok{  datos\_imputados\_temp }\OtherTok{\textless{}{-}} \FunctionTok{cbind}\NormalTok{(X1\_humedad, temperatura\_imputada)}
+  \FunctionTok{colnames}\NormalTok{(datos\_imputados\_temp) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"humedad"}\NormalTok{, }\StringTok{"temperatura"}\NormalTok{)}
+  
+\NormalTok{  sigma\_est }\OtherTok{\textless{}{-}} \FunctionTok{cov}\NormalTok{(datos\_imputados\_temp) }\SpecialCharTok{*}\NormalTok{ (n }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{) }\SpecialCharTok{/}\NormalTok{ n}
+  
+  \CommentTok{\# Corrección EM: agregamos la incertidumbre de los datos faltantes}
+  \CommentTok{\# a la entrada correspondiente a Var(temperatura).}
+\NormalTok{  proporcion\_faltante }\OtherTok{\textless{}{-}} \FunctionTok{length}\NormalTok{(indices\_faltantes) }\SpecialCharTok{/}\NormalTok{ n}
+\NormalTok{  sigma\_est[}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{] }\OtherTok{\textless{}{-}}\NormalTok{ sigma\_est[}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{] }\SpecialCharTok{+}\NormalTok{ proporcion\_faltante }\SpecialCharTok{*}\NormalTok{ var\_condicional}
+  
+  \CommentTok{\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+  \CommentTok{\# EVALUACIÓN DE CONVERGENCIA}
+  \CommentTok{\# Medimos la distancia entre los parámetros actuales y los anteriores}
+  \CommentTok{\# {-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}{-}}
+\NormalTok{  diferencia }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{((mu\_est }\SpecialCharTok{{-}}\NormalTok{ mu\_ant)}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{sum}\NormalTok{((sigma\_est }\SpecialCharTok{{-}}\NormalTok{ sigma\_ant)}\SpecialCharTok{\^{}}\DecValTok{2}\NormalTok{)}
+  
+\NormalTok{  historial }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(}
+\NormalTok{    historial,}
+    \FunctionTok{data.frame}\NormalTok{(}
+      \AttributeTok{iteracion =}\NormalTok{ iteracion,}
+      \AttributeTok{diferencia =}\NormalTok{ diferencia,}
+      \AttributeTok{mu\_humedad =}\NormalTok{ mu\_est[}\DecValTok{1}\NormalTok{],}
+      \AttributeTok{mu\_temperatura =}\NormalTok{ mu\_est[}\DecValTok{2}\NormalTok{],}
+      \AttributeTok{var\_humedad =}\NormalTok{ sigma\_est[}\DecValTok{1}\NormalTok{, }\DecValTok{1}\NormalTok{],}
+      \AttributeTok{cov\_hum\_temp =}\NormalTok{ sigma\_est[}\DecValTok{1}\NormalTok{, }\DecValTok{2}\NormalTok{],}
+      \AttributeTok{var\_temperatura =}\NormalTok{ sigma\_est[}\DecValTok{2}\NormalTok{, }\DecValTok{2}\NormalTok{]}
+\NormalTok{    )}
+\NormalTok{  )}
+\NormalTok{\}}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Convergencia alcanzada en"}\NormalTok{, iteracion, }\StringTok{"iteraciones.}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Convergencia alcanzada en 9 iteraciones.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Diferencia final:"}\NormalTok{, diferencia, }\StringTok{"}\SpecialCharTok{\textbackslash{}n\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Diferencia final: 4.036085e-06
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"Vector de medias estimado:}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Vector de medias estimado:
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{round}\NormalTok{(mu\_est, }\DecValTok{4}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 37.9310 53.3331
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{Matriz de covarianzas estimada:}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Matriz de covarianzas estimada:
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(}\FunctionTok{round}\NormalTok{(sigma\_est, }\DecValTok{4}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##              humedad temperatura
+## humedad       3.1674    -20.8476
+## temperatura -20.8476    291.9686
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Dataset final con imputaciones}
+\NormalTok{mediciones\_imputadas }\OtherTok{\textless{}{-}}\NormalTok{ mediciones}
+\NormalTok{mediciones\_imputadas}\SpecialCharTok{$}\NormalTok{temperatura\_imputada }\OtherTok{\textless{}{-}}\NormalTok{ temperatura\_imputada}
+\NormalTok{mediciones\_imputadas}\SpecialCharTok{$}\NormalTok{tipo }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(}\FunctionTok{is.na}\NormalTok{(mediciones}\SpecialCharTok{$}\NormalTok{temperatura),}
+                                    \StringTok{"Imputada por EM"}\NormalTok{, }\StringTok{"Observada"}\NormalTok{)}
+
+\CommentTok{\# Para dejar una sola columna final de temperatura completa}
+\NormalTok{mediciones\_imputadas}\SpecialCharTok{$}\NormalTok{temperatura\_final }\OtherTok{\textless{}{-}} \FunctionTok{ifelse}\NormalTok{(}
+  \FunctionTok{is.na}\NormalTok{(mediciones\_imputadas}\SpecialCharTok{$}\NormalTok{temperatura),}
+\NormalTok{  mediciones\_imputadas}\SpecialCharTok{$}\NormalTok{temperatura\_imputada,}
+\NormalTok{  mediciones\_imputadas}\SpecialCharTok{$}\NormalTok{temperatura}
+\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(historial, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ iteracion, }\AttributeTok{y =}\NormalTok{ mu\_temperatura)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{linewidth =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{size =} \FloatTok{1.8}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Trayectoria de la media estimada de temperatura"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Iteración"}\NormalTok{,}
+    \AttributeTok{y =} \FunctionTok{expression}\NormalTok{(}\FunctionTok{hat}\NormalTok{(mu)[temperatura])}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_light}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Tarea3_Simulacion_files/figure-latex/unnamed-chunk-15-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(mediciones\_imputadas, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ humedad, }\AttributeTok{y =}\NormalTok{ temperatura\_final, }\AttributeTok{color =}\NormalTok{ tipo)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{size =} \FloatTok{2.4}\NormalTok{, }\AttributeTok{alpha =} \FloatTok{0.85}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Datos completos después de imputar temperatura con EM"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Humedad"}\NormalTok{,}
+    \AttributeTok{y =} \StringTok{"Temperatura final"}\NormalTok{,}
+    \AttributeTok{color =} \StringTok{"Tipo de dato"}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_light}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Tarea3_Simulacion_files/figure-latex/unnamed-chunk-16-1.pdf}}
+
+\subsection{Problema 3}\label{problema-3}
+
+Considere un portafolio con un capital inicial \(V_0\). Definimos el
+proceso de rendimientos logarítmicos continuos como
+\[r_t= \log\left(\frac{P_t}{P_{t-1}}\right)\] para
+\(t \in {1, 2, . . . , T}\) Suponga que los rendimientos conforman una
+muestra aleatoria de tamaño \(T\) proveniente de una distribución de
+probabilidad desconocida \(F\). Dado que \(F\) no asume una forma
+paramétrica específica, utilizaremos la Función de Distribución Empírica
+(FDE), definida como: \$\$
+
+\section{\texorpdfstring{\widehat F\_T(x)}{F\_T(x)}}\label{f_tx}
+
+\frac{1}{T}
+
+\sum\emph{\{t=1\}\^{}\{T\} \mathbf 1}\{\{r\_t \leq x\}\}.
+
+\$\$
+
+Resuelva:
+
+\subsubsection{Inciso a): Remuestreo Bootstrap
+histórico}\label{inciso-a-remuestreo-bootstrap-histuxf3rico}
+
+Sea
+
+\[
+r_1,r_2,\ldots,r_T
+\]
+
+la muestra de rendimientos logarítmicos obtenida en la ventana de
+estimación.
+
+El método de Bootstrap histórico consiste en repetir el siguiente
+procedimiento \(B\) veces:
+
+\[
+r_b^* \sim \widehat F_T,
+\qquad b=1,\ldots,B.
+\]
+
+Equivalentemente,
+
+\[
+\mathbb P(r_b^* = r_t) = \frac{1}{T},
+\qquad t=1,\ldots,T.
+\]
+
+Así obtenemos una muestra Bootstrap
+
+\[
+r_1^*,r_2^*,\ldots,r_B^*,
+\]
+
+que representa escenarios simulados de rendimientos futuros bajo la
+hipótesis de que la distribución empírica histórica aproxima
+razonablemente la distribución desconocida \(F\).
+
+La justificación teórica es que, si la muestra histórica es
+representativa, entonces
+
+\[
+\widehat F_T(x) \approx F(x)
+\]
+
+para \(T\) grande. Por lo tanto, simular desde \[\widehat F_T\] permite
+aproximar la incertidumbre asociada a la distribución real \(F\), sin
+imponer una forma paramétrica.
+
+\subsubsection{Inciso b): Estimación del
+VaR}\label{inciso-b-estimaciuxf3n-del-var}
+
+Para un nivel de significancia \(\alpha \in (0,1)\), el rendimiento
+crítico se define como el cuantil inferior de orden \(\alpha\). En
+términos de la distribución de los rendimientos,
+
+\[
+r_c = F^{-1}(\alpha).
+\]
+
+Como \(F\) es desconocida, usamos la muestra Bootstrap. El estimador del
+rendimiento crítico es
+
+\[
+\widehat r_c
+=
+\inf\left\{
+x:
+\widehat F_B^*(x)\geq \alpha
+\right\},
+\]
+
+donde
+
+\[
+\widehat F_B^*(x)
+=
+\frac{1}{B}
+\sum_{b=1}^{B}
+\mathbf 1_{\{r_b^*\leq x\}}.
+\]
+
+Si el rendimiento logarítmico del día siguiente fuera \(r\), entonces el
+valor futuro del portafolio sería
+
+\[
+V_1 = V_0 e^r.
+\]
+
+La ganancia o pérdida monetaria del portafolio es
+
+\[
+\text{PnL}
+=
+V_1 - V_0
+=
+V_0(e^r-1).
+\]
+
+Si \(\widehat r_c\) es negativo, representa un rendimiento extremo
+adverso. La pérdida monetaria asociada es
+
+\[
+V_0 - V_0 e^{\widehat r_c}
+=
+V_0(1-e^{\widehat r_c}).
+\]
+
+Por tanto, el VaR monetario estimado es
+
+\[
+\widehat{\text{VaR}}_{\text{USD}}
+=
+V_0(1-e^{\widehat r_c}).
+\]
+
+Este número se interpreta como una pérdida máxima esperada bajo un nivel
+de confianza \(1-\alpha\). Por ejemplo, si \(\alpha=0.05\), se está
+estimando una pérdida que solo debería ser excedida aproximadamente el
+\(5\%\) de las veces.
+
+\subsubsection{Inciso c): Implementación
+computacional}\label{inciso-c-implementaciuxf3n-computacional}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{42}\NormalTok{)}
+\NormalTok{MSFT\_close }\OtherTok{\textless{}{-}} \FunctionTok{read.csv}\NormalTok{(}\StringTok{"MSF\_close.csv"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+El archivo contiene precios ajustados de cierre. La columna
+\texttt{Adj\_close} se toma como la serie de precios \(P_t\).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Convertimos la fecha y nos aseguramos de que el precio sea numérico}
+\NormalTok{MSFT\_close}\SpecialCharTok{$}\NormalTok{Fecha }\OtherTok{\textless{}{-}} \FunctionTok{as.Date}\NormalTok{(MSFT\_close}\SpecialCharTok{$}\NormalTok{Fecha)}
+\NormalTok{MSFT\_close}\SpecialCharTok{$}\NormalTok{Adj\_close }\OtherTok{\textless{}{-}} \FunctionTok{as.numeric}\NormalTok{(MSFT\_close}\SpecialCharTok{$}\NormalTok{Adj\_close)}
+
+
+\CommentTok{\# Parámetros del problema}
+\NormalTok{V0 }\OtherTok{\textless{}{-}} \DecValTok{1000}
+\NormalTok{B }\OtherTok{\textless{}{-}} \DecValTok{10000}
+\NormalTok{alpha }\OtherTok{\textless{}{-}} \FloatTok{0.05}
+
+\CommentTok{\# Ventana de estimación: primeros 252 precios}
+\NormalTok{datos\_estimacion }\OtherTok{\textless{}{-}}\NormalTok{ MSFT\_close[}\DecValTok{1}\SpecialCharTok{:}\DecValTok{252}\NormalTok{, ]}
+
+\CommentTok{\# Ventana fuera de muestra: siguientes 10 precios}
+\NormalTok{datos\_validacion }\OtherTok{\textless{}{-}}\NormalTok{ MSFT\_close[}\DecValTok{253}\SpecialCharTok{:}\DecValTok{262}\NormalTok{, ]}
+\end{Highlighting}
+\end{Shaded}
+
+Se van a generar \(251\) rendimientos internos de estimación. Para la
+validación se calculan \(10\) rendimientos fuera de muestra usando como
+base el último precio de estimación y los \(10\) precios posteriores.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Rendimientos de estimación:}
+\CommentTok{\# r\_t = log(P\_t / P\_\{t{-}1\}) usando los primeros 252 precios}
+\NormalTok{r\_estimacion }\OtherTok{\textless{}{-}} \FunctionTok{diff}\NormalTok{(}\FunctionTok{log}\NormalTok{(datos\_estimacion}\SpecialCharTok{$}\NormalTok{Adj\_close))}
+
+\CommentTok{\# Rendimientos de validación:}
+\CommentTok{\# Se usan los precios desde el último precio de estimación hasta cada precio posterior.}
+\NormalTok{precios\_base\_validacion }\OtherTok{\textless{}{-}}\NormalTok{ MSFT\_close}\SpecialCharTok{$}\NormalTok{Adj\_close[}\DecValTok{252}\SpecialCharTok{:}\DecValTok{261}\NormalTok{]}
+
+\NormalTok{precios\_validacion }\OtherTok{\textless{}{-}}\NormalTok{ MSFT\_close}\SpecialCharTok{$}\NormalTok{Adj\_close[}\DecValTok{253}\SpecialCharTok{:}\DecValTok{262}\NormalTok{]}
+
+\NormalTok{r\_validacion }\OtherTok{\textless{}{-}} \FunctionTok{log}\NormalTok{(precios\_validacion }\SpecialCharTok{/}\NormalTok{ precios\_base\_validacion)}
+
+\NormalTok{tabla\_resumen\_r }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{Muestra =} \FunctionTok{c}\NormalTok{(}\StringTok{"Estimación"}\NormalTok{, }\StringTok{"Validación"}\NormalTok{),}
+  \AttributeTok{Numero\_de\_rendimientos =} \FunctionTok{c}\NormalTok{(}\FunctionTok{length}\NormalTok{(r\_estimacion), }\FunctionTok{length}\NormalTok{(r\_validacion))}
+\NormalTok{)}
+
+\NormalTok{tabla\_resumen\_r}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      Muestra Numero_de_rendimientos
+## 1 Estimación                    251
+## 2 Validación                     10
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df\_rend }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{Fecha =}\NormalTok{ MSFT\_close}\SpecialCharTok{$}\NormalTok{Fecha[}\DecValTok{2}\SpecialCharTok{:}\DecValTok{252}\NormalTok{],}
+  \AttributeTok{Rendimiento =}\NormalTok{ r\_estimacion}
+\NormalTok{)}
+
+\FunctionTok{ggplot}\NormalTok{(df\_rend, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ Fecha, }\AttributeTok{y =}\NormalTok{ Rendimiento)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{color =} \StringTok{"blue"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_hline}\NormalTok{(}\AttributeTok{yintercept =} \DecValTok{0}\NormalTok{, }\AttributeTok{linetype =} \StringTok{"dashed"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}
+    \AttributeTok{title =} \StringTok{"Rendimientos logarítmicos de MSFT en la ventana de estimación"}\NormalTok{,}
+    \AttributeTok{x =} \StringTok{"Fecha"}\NormalTok{,}
+    \AttributeTok{y =} \FunctionTok{expression}\NormalTok{(r[t])}
+\NormalTok{  ) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{Tarea3_Simulacion_files/figure-latex/grafica-rendimientos-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{42}\NormalTok{)}
+
+\CommentTok{\# Bootstrap histórico:}
+\CommentTok{\# cada escenario r\_b\^{}* se obtiene remuestreando con reemplazo}
+\CommentTok{\# de los rendimientos observados en la ventana de estimación.}
+\NormalTok{r\_boot }\OtherTok{\textless{}{-}} \FunctionTok{sample}\NormalTok{( }\AttributeTok{x =}\NormalTok{ r\_estimacion, }\AttributeTok{size =}\NormalTok{ B, }\AttributeTok{replace =} \ConstantTok{TRUE}\NormalTok{)}
+
+\CommentTok{\#  cuantil alpha de la muestra bootstrap.}
+
+\NormalTok{r\_c\_hat }\OtherTok{\textless{}{-}} \FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{quantile}\NormalTok{(r\_boot, }\AttributeTok{probs =}\NormalTok{ alpha, }\AttributeTok{type =} \DecValTok{1}\NormalTok{))}\CommentTok{\# type = 1 corresponde a la inversa empírica escalonada.}
+
+\CommentTok{\# VaR monetario}
+\NormalTok{VaR\_USD }\OtherTok{\textless{}{-}}\NormalTok{ V0 }\SpecialCharTok{*}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{{-}} \FunctionTok{exp}\NormalTok{(r\_c\_hat))}
+
+\NormalTok{resultados\_var }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}
+  \AttributeTok{Capital\_inicial =}\NormalTok{ V0,}
+  \AttributeTok{B =}\NormalTok{ B,}
+  \AttributeTok{alpha =}\NormalTok{ alpha,}
+  \AttributeTok{Rendimiento\_critico =}\NormalTok{ r\_c\_hat,}
+  \AttributeTok{VaR\_USD =}\NormalTok{ VaR\_USD}
+\NormalTok{)}
+
+\NormalTok{resultados\_var}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   Capital_inicial     B alpha Rendimiento_critico  VaR_USD
+## 1            1000 10000  0.05         -0.02427944 23.98707
+\end{verbatim}
+
+La estimación obtenida fue
+
+\[
+\widehat r_c =
+-0.024279.
+\]
+
+Por tanto,
+
+\[
+\widehat{\text{VaR}}_{\text{USD}}
+=
+23.9871
+\text{ USD}.
+\]
+
+Esto significa que, con nivel de confianza aproximado del \(95\%\), la
+pérdida diaria del portafolio no debería exceder aproximadamente 23.99
+dólares bajo el modelo histórico Bootstrap.
+
+\section{Backtesting}\label{backtesting}
+
+Para cada día de validación se calcula el PnL real mediante
+
+\[
+\text{PnL}_t
+=
+V_0(e^{r_t}-1).
+\]
+
+Hay una excepción si la pérdida real supera el VaR estimado. Es decir,
+
+\[
+I_t
+=
+\mathbf 1_{\{\text{PnL}_t < -\widehat{\text{VaR}}_{\text{USD}}\}}.
+\]
+
+Equivalentemente, como la función exponencial es creciente, también se
+puede escribir
+
+\[
+I_t
+=
+\mathbf 1_{\{r_t < \widehat r_c\}}.
+\]
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{VaR\_USD }\OtherTok{\textless{}{-}}\NormalTok{ V0 }\SpecialCharTok{*}\NormalTok{ (}\DecValTok{1} \SpecialCharTok{{-}} \FunctionTok{exp}\NormalTok{(r\_c\_hat))}
+
+\NormalTok{PnL\_validacion }\OtherTok{\textless{}{-}}\NormalTok{ V0 }\SpecialCharTok{*}\NormalTok{ (}\FunctionTok{exp}\NormalTok{(r\_validacion) }\SpecialCharTok{{-}} \DecValTok{1}\NormalTok{)}
+
+\NormalTok{I\_t }\OtherTok{\textless{}{-}} \FunctionTok{as.integer}\NormalTok{(PnL\_validacion }\SpecialCharTok{\textless{}} \SpecialCharTok{{-}}\NormalTok{VaR\_USD)}
+
+\NormalTok{X\_obs }\OtherTok{\textless{}{-}} \FunctionTok{sum}\NormalTok{(I\_t)}
+\NormalTok{E\_X }\OtherTok{\textless{}{-}} \DecValTok{10} \SpecialCharTok{*}\NormalTok{ alpha}
+\end{Highlighting}
+\end{Shaded}
+
+Bajo una calibración correcta del VaR, cada día fuera de muestra tiene
+probabilidad aproximada \(\alpha\) de producir una excepción. Si
+suponemos independencia aproximada entre días de validación, entonces el
+número total de excepciones
+
+\[
+X = \sum_{t=T+1}^{T+10} I_t
+\]
+
+puede modelarse aproximadamente como
+
+\[
+X \sim \text{Binomial}(10,\alpha).
+\]
+
+Por tanto,
+
+\[
+\mathbb E[X]
+=
+10\alpha
+=
+10(0.05)
+=
+0.5.
+\]
+
+En esta muestra se observaron
+
+\[
+X_{\text{obs}} =
+2
+\]
+
+excepciones. El valor esperado bajo el modelo era
+
+\[
+\mathbb E[X] =
+0.5.
+\]
+
+\end{document}

@@ -2,7 +2,12 @@
 title: "Tarea-Examen 3: Simulación Estocástica"
 author: "José Jorge Martínez de la Cruz"
 date: "26 de Mayo 2026"
-output: "github_document"
+output: 
+  pdf_document: # Tipo de archivo de salida: PDF
+    latex_engine: xelatex # Motor de LaTeX para compilar el documento
+    number_sections: no # Para que no imprima el número de la sección
+    toc: no # Para que no cree una tabla de contenidos
+    highlight: tango # Para el color de los resaltados
 ---
 
 ```{r echo=TRUE, message=FALSE, warning=FALSE}
@@ -509,7 +514,7 @@ ggplot(mediciones_imputadas, aes(x = humedad, y = temperatura_final, color = tip
 ## Problema 3
 
 Considere un portafolio con un capital inicial $V_0$. Definimos el proceso de rendimientos logarítmicos
-continuos como $ r_t = \log\left(\frac{P_t}{P_{t-1}}\right) $ para $t \in {1, 2, . . . , T}$ Suponga que los rendimientos conforman una muestra aleatoria de tamaño $T$ proveniente de una distribución de probabilidad desconocida $F$. Dado que $F$ no asume una forma paramétrica específica, utilizaremos la Función de Distribución Empírica (FDE), definida como:
+continuos como $$r_t= \log\left(\frac{P_t}{P_{t-1}}\right)$$ para $t \in {1, 2, . . . , T}$ Suponga que los rendimientos conforman una muestra aleatoria de tamaño $T$ proveniente de una distribución de probabilidad desconocida $F$. Dado que $F$ no asume una forma paramétrica específica, utilizaremos la Función de Distribución Empírica (FDE), definida como:
 $$
 
 \widehat F_T(x)

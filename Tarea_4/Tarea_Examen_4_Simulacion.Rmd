@@ -1,0 +1,124 @@
+---
+title: "Tarea-Examen 4: Simulación Estocástica"
+author: "José Jorge Martínez de la Cruz"
+date: "2026-05-18"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    number_sections: true
+---
+
+```{r setup, echo=TRUE, message=FALSE, warning=FALSE}
+# Librerías necesarias
+library(quantmod)
+library(xts)
+library(rugarch)
+library(copula)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(knitr)
+library(gridExtra)
+
+set.seed(236)
+```
+
+## Instrucciones:  
+Para cada ejercicio, explique el algoritmo y de el código correspondiente. Considerando dos series correlacionadas del ejercicio 4 de la Tarea Examen 2
+
+```{r echo=TRUE}
+# vamos a descargar datos de META/Facebook (META) y Apple (AAPL) para el mismo periodo de tiempo (200 días)
+symbols <- c("META", "AAPL")
+getSymbols(symbols, from = Sys.Date() - 350, to = Sys.Date(), periodicity = "daily")
+
+# últimos 200 precios de cierre
+precios_meta <- as.numeric(tail(Cl(META), 200))
+precios_aapl <- as.numeric(tail(Cl(AAPL), 200))
+
+```
+
+
+## Ejercicio 1
+Haga una prueba Ljung Box con lags 5, 10 y 15 individualmente para ver si los datos pueden considerarse como una muestra, posteriormente considere los rendimientos logarítmicos y adicionalmente a la prueba Ljung
+Box haga una prueba Akaike y grafique las funciones de autocorrelación para los lags antes mencionados.
+
+### Solución
+
+Primero aplicamos la prueba de Ljung-Box a las series de precios. La hipótesis nula de esta prueba es que no hay autocorrelación hasta el rezago especificado. Si el valor-p es pequeño, rechazamos la hipótesis de no autocorrelación y concluimos que la serie conserva dependencia temporal.
+
+Después calculamos rendimientos logarítmicos,
+
+$$
+R_t = \log(P_t)-\log(P_{t-1}),
+$$
+
+y repetimos el análisis sobre estos rendimientos.
+
+```{r}
+# Prueba de Ljung-Box para precios de META
+
+Box.test(precios_meta, lag = 5, type = "Ljung-Box")$p.value
+Box.test(precios_meta, lag = 10, type = "Ljung-Box")$p.value
+Box.test(precios_meta, lag = 15, type = "Ljung-Box")$p.value
+```
+
+
+```{r}
+# Prueba de Ljung-Box para precios de AAPL
+Box.test(precios_aapl, lag = 5, type = "Ljung-Box")$p.value
+Box.test(precios_aapl, lag = 10, type = "Ljung-Box")$p.value
+Box.test(precios_aapl, lag = 15, type = "Ljung-Box")$p.value
+```
+Después de realizar las pruebas de hiótesis en ambos precios de META y AAPL, los valores-p son menores que 0.05, lo que indica que rechazamos la hipótesis nula de no autocorrelación. Esto sugiere que las series de precios tienen dependencia temporal y no pueden considerarse como muestras independientes. Veamos qué sucede con las series de tiempo de los rendimientos. 
+
+```{r}
+# calculamos los rendimientos discretos
+rend_meta <- diff(precios_meta) / head(precios_meta, -1)
+rend_aapl <- diff(precios_aapl) / head(precios_aapl, -1)
+```
+
+```{r}
+# Prueba de Ljung-Box para rendimientos de META
+Box.test(rend_meta, lag = 5, type = "Ljung-Box")$p.value
+Box.test(rend_meta, lag = 10, type = "Ljung-Box")$p.value
+Box.test(rend_meta, lag = 15, type = "Ljung-Box")$p.value
+```
+
+```{r}
+# Prueba de Ljung-Box para rendimientos de AAPL
+Box.test(rend_aapl, lag = 5, type = "Ljung-Box")$p.value
+Box.test(rend_aapl, lag = 10, type = "Ljung-Box")$p.value
+Box.test(rend_aapl, lag = 15, type = "Ljung-Box")$p.value
+```
+Los resultados se presentan en la siguiente tabla:
+
+| Activo | Rezago (Lag) | Valor *p* | Resultado Ljung-Box ($\alpha = 0.05$) |
+|:---|:---:|:---:|:---|
+| **META** | 5 | 0.0671 | No se rechaza $H_0$ (Independencia) |
+| **META** | 10 | 0.2680 | No se rechaza $H_0$ (Independencia) |
+| **META** | 15 | 0.1705 | No se rechaza $H_0$ (Independencia) |
+| **AAPL** | 5 | 0.4976 | No se rechaza $H_0$ (Independencia) |
+| **AAPL** | 10 | 0.4645 | No se rechaza $H_0$ (Independencia) |
+| **AAPL** | 15 | 0.5420 | No se rechaza $H_0$ (Independencia) |
+
+Y los gráficos de las funciones de autocorrelación (ACF y PACF) para los precios y rendimientos de META y AAPL se presentan a continuación:
+
+```{r}
+# Configurar la ventana para ver 4 gráficas al mismo tiempo (2x2)
+par(mfrow = c(2, 2))
+
+# 1. ACF y PACF de PRECIOS (mostrará alta persistencia)
+acf(precios_meta, lag.max = 15, main = "ACF Precios META", col = "darkblue")
+pacf(precios_meta, lag.max = 15, main = "PACF Precios META", col = "darkblue")
+
+# 2. ACF y PACF de RENDIMIENTOS (debería verse como ruido blanco)
+acf(rend_meta, lag.max = 15, main = "ACF Rendimientos META", col = "darkgreen")
+pacf(rend_meta, lag.max = 15, main = "PACF Rendimientos META", col = "darkgreen")
+
+# Restablecer la ventana gráfica a 1x1
+par(mfrow = c(1, 1))
+```
+
+
+
