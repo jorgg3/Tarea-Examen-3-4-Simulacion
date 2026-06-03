@@ -4,6 +4,7 @@ author: "José Jorge Martínez de la Cruz"
 date: "2026-05-18"
 output:
   pdf_document:
+    keep_tex: true
     toc: true
     toc_depth: 3
     number_sections: true
