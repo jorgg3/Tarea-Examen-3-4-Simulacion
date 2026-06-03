@@ -3,7 +3,7 @@ title: "Tarea-Examen 4: Simulación Estocástica"
 author: "José Jorge Martínez de la Cruz"
 date: "2026-05-18"
 output:
-  html_document:
+  pdf_document:
     toc: true
     toc_depth: 3
     number_sections: true
@@ -55,7 +55,7 @@ $$
 
 y repetimos el análisis sobre estos rendimientos.
 
-```{r}
+```{r include=FALSE}
 # Prueba de Ljung-Box para precios de META
 
 Box.test(precios_meta, lag = 5, type = "Ljung-Box")$p.value
@@ -64,7 +64,7 @@ Box.test(precios_meta, lag = 15, type = "Ljung-Box")$p.value
 ```
 
 
-```{r}
+```{r include=FALSE}
 # Prueba de Ljung-Box para precios de AAPL
 Box.test(precios_aapl, lag = 5, type = "Ljung-Box")$p.value
 Box.test(precios_aapl, lag = 10, type = "Ljung-Box")$p.value
@@ -72,20 +72,20 @@ Box.test(precios_aapl, lag = 15, type = "Ljung-Box")$p.value
 ```
 Después de realizar las pruebas de hiótesis en ambos precios de META y AAPL, los valores-p son menores que 0.05, lo que indica que rechazamos la hipótesis nula de no autocorrelación. Esto sugiere que las series de precios tienen dependencia temporal y no pueden considerarse como muestras independientes. Veamos qué sucede con las series de tiempo de los rendimientos. 
 
-```{r}
+```{r include=FALSE}
 # calculamos los rendimientos discretos
 rend_meta <- diff(precios_meta) / head(precios_meta, -1)
 rend_aapl <- diff(precios_aapl) / head(precios_aapl, -1)
 ```
 
-```{r}
+```{r include=FALSE}
 # Prueba de Ljung-Box para rendimientos de META
 Box.test(rend_meta, lag = 5, type = "Ljung-Box")$p.value
 Box.test(rend_meta, lag = 10, type = "Ljung-Box")$p.value
 Box.test(rend_meta, lag = 15, type = "Ljung-Box")$p.value
 ```
 
-```{r}
+```{r include=FALSE}
 # Prueba de Ljung-Box para rendimientos de AAPL
 Box.test(rend_aapl, lag = 5, type = "Ljung-Box")$p.value
 Box.test(rend_aapl, lag = 10, type = "Ljung-Box")$p.value
@@ -104,21 +104,496 @@ Los resultados se presentan en la siguiente tabla:
 
 Y los gráficos de las funciones de autocorrelación (ACF y PACF) para los precios y rendimientos de META y AAPL se presentan a continuación:
 
-```{r}
-# Configurar la ventana para ver 4 gráficas al mismo tiempo (2x2)
-par(mfrow = c(2, 2))
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+par(mfrow = c(2,2))
 
-# 1. ACF y PACF de PRECIOS (mostrará alta persistencia)
 acf(precios_meta, lag.max = 15, main = "ACF Precios META", col = "darkblue")
 pacf(precios_meta, lag.max = 15, main = "PACF Precios META", col = "darkblue")
 
-# 2. ACF y PACF de RENDIMIENTOS (debería verse como ruido blanco)
+
 acf(rend_meta, lag.max = 15, main = "ACF Rendimientos META", col = "darkgreen")
 pacf(rend_meta, lag.max = 15, main = "PACF Rendimientos META", col = "darkgreen")
 
-# Restablecer la ventana gráfica a 1x1
+acf(precios_aapl, lag.max = 15, main = "ACF Precios AAPL", col = "darkblue")
+pacf(precios_meta, lag.max = 15, main = "PACF Precios AAPL", col = "darkblue")
+
+
+acf(rend_aapl, lag.max = 15, main = "ACF Rendimientos AAPL", col = "darkgreen")
+pacf(rend_aapl, lag.max = 15, main = "PACF Rendimientos AAPL", col = "darkgreen")
+
 par(mfrow = c(1, 1))
 ```
 
+De las gráficas tanto de ACF como de PACF, se observa que existe alta correlación en los precios originales, hay que notar también que, aplicar la transformación a los precios para convertirlos a rendimientos logarítmicos aplica lo siguiente: Una transformación logarítmica para estabilizar la varianza y una aplicación del operador diferencia para eliminar la autocorrelación. 
+
+## Ejercicio 2
+
+Genere un ciclo para evaluar distintos parámetros de los modelos $ARMA(m,n)- GARCH(p,q)$. Considere $0 ≤ m, n ≤ 4$ y $0 ≤ p$,  $q ≤ 2$ Presente la matriz con los resultados incluyendo las pruebas estadísticas a los residuales estandarizados de cada modelo así como los parámetros (ordénela de acuerdo a mayor p-value de la
+prueba Ljung-Box promedio). Diga qué modelo escogería para cada una de las dos series y por qué.
+
+### Solución
+
+Se evaluan modelos ARMA$(m,n)$-GARCH$(p,q)$ con
+
+$$
+  0 \leq m,n \leq 4, \qquad 0 \leq p,q \leq 2.
+$$
+  
+  La parte ARMA modela la media condicional:
+  
+  $$
+  R_t = \mu + \sum_{i=1}^{m}\phi_i R_{t-i} + \sum_{j=1}^{n}\theta_j\varepsilon_{t-j} + \varepsilon_t,
+$$
+  
+  mientras que la parte GARCH modela la varianza condicional:
+  
+  $$
+  \sigma_t^2 = \omega + \sum_{i=1}^{p}\alpha_i\varepsilon_{t-i}^2 + \sum_{j=1}^{q}\beta_j\sigma_{t-j}^2.
+$$
+  
+Fijaremos como en clase que si uno de los órdenes GARCH es cero y el otro no, se considera el caso sin GARCH, es decir, GARCH$(0,0)$. Para cada modelo se guardan:
+  
+* los órdenes $AR, MA, GARCH-p$ y $GARCH-q$;
+* AIC y BIC;
+* valor-p de Ljung-Box para residuales estandarizados con rezagos 5, 10 y 15;
+* valor-p promedio de esas tres pruebas;
+* valor-p de Ljung-Box para residuales estandarizados al cuadrado.
+
+Ordenamos la matriz de resultados de acuerdo con el mayor valor-p promedio de Ljung-Box sobre residuales estandarizados. La razón es que valores-p grandes indican menor evidencia de autocorrelación remanente en los residuales.
+
+```{r include=FALSE}
+# resultados para META.
+# por columnas:
+# 1 AR, 2 MA, 3 GARCH_p_original, 4 GARCH_q_original,
+# 5 GARCH_p_usado, 6 GARCH_q_usado,
+# 7 AIC, 8 BIC,
+# 9 LB_5, 10 LB_10, 11 LB_15,
+# 12 LB_promedio, 13 LB2_10, 14 ID
+
+res_meta <- matrix(NA, nrow = 5*5*3*3, ncol = 14)
+colnames(res_meta) <- c("AR", "MA", "GARCH_p_original", "GARCH_q_original",
+                        "GARCH_p_usado", "GARCH_q_usado",
+                        "AIC", "BIC", "LB_5", "LB_10", "LB_15",
+                        "LB_promedio", "LB2_10", "ID")
+
+fits_meta <- vector("list", 5*5*3*3)
+fila <- 1
+id <- 1
+
+for (m in 0:4) {
+  for (n in 0:4) {
+    for (p in 0:2) {
+      for (q in 0:2) {
+        
+        if (p*q == 0) {
+          p_usado <- 0
+          q_usado <- 0
+        } else {
+          p_usado <- p
+          q_usado <- q
+        }
+        
+        spec <- ugarchspec(
+          variance.model = list(model = "sGARCH", garchOrder = c(p_usado, q_usado)),
+          mean.model = list(armaOrder = c(m,n), include.mean = TRUE),
+          distribution.model = "std"
+        )
+        
+        fit <- try(ugarchfit(spec = spec, data = rend_meta, solver = "hybrid"), silent = TRUE)
+        
+        if (!inherits(fit, "try-error")) {
+          z <- as.numeric(na.omit(residuals(fit, standardize = TRUE)))
+          ic <- infocriteria(fit)
+          
+          lb5 <- Box.test(z, lag = 5, type = "Ljung-Box")$p.value
+          lb10 <- Box.test(z, lag = 10, type = "Ljung-Box")$p.value
+          lb15 <- Box.test(z, lag = 15, type = "Ljung-Box")$p.value
+          lbprom <- mean(c(lb5, lb10, lb15))
+          lb2_10 <- Box.test(z^2, lag = 10, type = "Ljung-Box")$p.value
+          
+          res_meta[fila, ] <- c(m, n, p, q, p_usado, q_usado,
+                                as.numeric(ic["Akaike", 1]),
+                                as.numeric(ic["Bayes", 1]),
+                                lb5, lb10, lb15, lbprom, lb2_10, id)
+          
+          fits_meta[[id]] <- fit
+          fila <- fila + 1
+          id <- id + 1
+        }
+      }
+    }
+  }
+}
+
+res_meta <- res_meta[1:(fila-1), ]
+res_meta <- res_meta[order(-res_meta[, "LB_promedio"], res_meta[, "AIC"]), ]
+
+```
+
+Escogemos el modelo de META buscando que los residuales y los residuales al cuadrado pasen Ljung-Box al nivel 5%. Si hay varios candidatos, se escoge el de menor AIC entre ellos. Si ninguno cumple, se toma el primero de la matriz ordenada.
+
+```{r include=FALSE}
+candidatos_meta <- res_meta[res_meta[, "LB_5"] > 0.05 &
+                              res_meta[, "LB_10"] > 0.05 &
+                              res_meta[, "LB_15"] > 0.05 &
+                              res_meta[, "LB2_10"] > 0.05, ]
+
+if (is.null(dim(candidatos_meta))) {
+  candidatos_meta <- matrix(candidatos_meta, nrow = 1)
+  colnames(candidatos_meta) <- colnames(res_meta)
+}
+
+if (nrow(candidatos_meta) > 0) {
+  candidatos_meta <- candidatos_meta[order(candidatos_meta[, "AIC"]), ]
+  ganador_meta <- candidatos_meta[1, ]
+} else {
+  ganador_meta <- res_meta[1, ]
+}
+
+ganador_meta
+fit_meta <- fits_meta[[ganador_meta["ID"]]]
+```
+
+Y ahora repetimos el mismo proceso para AAPL.
+
+```{r include=FALSE}
+res_aapl <- matrix(NA, nrow = 5*5*3*3, ncol = 14)
+colnames(res_aapl) <- c("AR", "MA", "GARCH_p_original", "GARCH_q_original",
+                        "GARCH_p_usado", "GARCH_q_usado",
+                        "AIC", "BIC", "LB_5", "LB_10", "LB_15",
+                        "LB_promedio", "LB2_10", "ID")
+
+fits_aapl <- vector("list", 5*5*3*3)
+fila <- 1
+id <- 1
+
+for (m in 0:4) {
+  for (n in 0:4) {
+    for (p in 0:2) {
+      for (q in 0:2) {
+        
+        if (p*q == 0) {
+          p_usado <- 0
+          q_usado <- 0
+        } else {
+          p_usado <- p
+          q_usado <- q
+        }
+        
+        spec <- ugarchspec(
+          variance.model = list(model = "sGARCH", garchOrder = c(p_usado, q_usado)),
+          mean.model = list(armaOrder = c(m,n), include.mean = TRUE),
+          distribution.model = "std"
+        )
+        
+        fit <- try(ugarchfit(spec = spec, data = rend_aapl, solver = "hybrid"), silent = TRUE)
+        
+        if (!inherits(fit, "try-error")) {
+          z <- as.numeric(na.omit(residuals(fit, standardize = TRUE)))
+          ic <- infocriteria(fit)
+          
+          lb5 <- Box.test(z, lag = 5, type = "Ljung-Box")$p.value
+          lb10 <- Box.test(z, lag = 10, type = "Ljung-Box")$p.value
+          lb15 <- Box.test(z, lag = 15, type = "Ljung-Box")$p.value
+          lbprom <- mean(c(lb5, lb10, lb15))
+          lb2_10 <- Box.test(z^2, lag = 10, type = "Ljung-Box")$p.value
+          
+          res_aapl[fila, ] <- c(m, n, p, q, p_usado, q_usado,
+                                as.numeric(ic["Akaike", 1]),
+                                as.numeric(ic["Bayes", 1]),
+                                lb5, lb10, lb15, lbprom, lb2_10, id)
+          
+          fits_aapl[[id]] <- fit
+          fila <- fila + 1
+          id <- id + 1
+        }
+      }
+    }
+  }
+}
+
+res_aapl <- res_aapl[1:(fila-1), ]
+res_aapl <- res_aapl[order(-res_aapl[, "LB_promedio"], res_aapl[, "AIC"]), ]
+
+#head(res_aapl, 10)
+```
+
+```{r include=FALSE}
+candidatos_aapl <- res_aapl[res_aapl[, "LB_5"] > 0.05 &
+                              res_aapl[, "LB_10"] > 0.05 &
+                              res_aapl[, "LB_15"] > 0.05 &
+                              res_aapl[, "LB2_10"] > 0.05, ]
+
+if (is.null(dim(candidatos_aapl))) {
+  candidatos_aapl <- matrix(candidatos_aapl, nrow = 1)
+  colnames(candidatos_aapl) <- colnames(res_aapl)
+}
+
+if (nrow(candidatos_aapl) > 0) {
+  candidatos_aapl <- candidatos_aapl[order(candidatos_aapl[, "AIC"]), ]
+  ganador_aapl <- candidatos_aapl[1, ]
+} else {
+  ganador_aapl <- res_aapl[1, ]
+}
+
+ganador_aapl
+fit_aapl <- fits_aapl[[ganador_aapl["ID"]]]
+```
+
+Por construcción, el modelo seleccionado para cada serie es aquel que deja residuales estandarizados con menor evidencia de autocorrelación. Además revisamos los residuales al cuadrado, porque éstos ayudan a detectar si todavía queda dependencia en la volatilidad.En el caso de los precios de AAPL el modelo usado es $ARMA(3,4) - GARCH(1,1)$ y en el caso de META $ARMA(4,3)-GARCH(2,2)$. 
+
+```{r ejercicio2-residuales, echo=FALSE, fig.height=7, fig.width=8}
+z_meta <- as.numeric(na.omit(residuals(fit_meta, standardize = TRUE)))
+z_aapl <- as.numeric(na.omit(residuals(fit_aapl, standardize = TRUE)))
+
+par(mfrow = c(2,2))
+acf(z_meta, lag.max = 15, main = "ACF residuales META")
+acf(z_aapl, lag.max = 15, main = "ACF residuales AAPL")
+acf(z_meta^2, lag.max = 15, main = "ACF residuales^2 META")
+acf(z_aapl^2, lag.max = 15, main = "ACF residuales^2 AAPL")
+par(mfrow = c(1,1))
+```
+
+# Ejercicio 3
+
+Considerando el modelo óptimo para cada serie, escoja una distribución para los residuales. Con dicha distribución obtenga la muestra de la cópula que se utilizará para estimar dicha cópula. Utilizando máxima verosimilitud estime los parámetros de las cópulas Gaussiana, t de Student, Gumbel, Clayton y Frank. Utilizando la distancia Cramér-von Mises con la cópula empírica escoja la mejor.
+
+## Solución
+
+Usaremos la distribución empírica de los residuales estandarizados. Esto evita imponer una forma paramétrica adicional a los residuales. Para construir la muestra de la cópula se transforma cada residual estandarizado mediante su rango:
+
+$$
+U_i = \frac{\operatorname{rango}(z_i)}{N+1}.
+$$
+
+Así se obtiene una muestra bivariada en $[0,1]^2$. Y estimamos las cinco cópulas por máxima verosimilitud.
+
+```{r include=FALSE}
+# Como los dos vectores pueden tener la misma longitud, sólo verificamos y recortamos si fuera necesario.
+N <- min(length(z_meta), length(z_aapl))
+z_meta <- tail(z_meta, N)
+z_aapl <- tail(z_aapl, N)
+
+U_meta <- rank(z_meta, ties.method = "average") / (N + 1)
+U_aapl <- rank(z_aapl, ties.method = "average") / (N + 1)
+
+U <- cbind(U_meta, U_aapl)
+colnames(U) <- c("META", "AAPL")
+
+```
+
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+fit_gauss <- fitCopula(normalCopula(dim = 2, dispstr = "un"), data = U, method = "ml")
+fit_t <- fitCopula(tCopula(dim = 2, dispstr = "un", df = 6, df.fixed = FALSE), data = U, method = "ml")
+fit_gumbel <- fitCopula(gumbelCopula(dim = 2), data = U, method = "ml")
+fit_clayton <- fitCopula(claytonCopula(dim = 2), data = U, method = "ml")
+fit_frank <- fitCopula(frankCopula(dim = 2), data = U, method = "ml")
+```
+
+Para comparar las cópulas se usa la distancia de Cramér-von Mises contra la cópula empírica. Primero calculamos la cópula empírica en los puntos observados:
+
+$$
+C_N(u_i,v_i)=\frac{1}{N}\sum_{j=1}^{N}\mathbf{1}_{\{U_{j1}\leq u_i,\,U_{j2}\leq v_i\}}.
+$$
+
+Luego comparamos esa cantidad con el valor de cada cópula ajustada.Los resultados se presentan en la siguiente tabla:
+
+| Cópula | Distancia Cramér-von Mises |
+|:---|:---:|
+| **Gaussiana** | 9.694884e-05 |
+| **t Student** | 9.323047e-05 |
+| **Gumbel** | 1.236233e-04 |
+| **Clayton** | 1.150006e-04 |
+| **Frank** | 1.072208e-04 |
+
+La mejor cópul,a, siguiendo este criterio es la t de Student, aunque la Gaussiana también se acerca bastante. La diferencia entre ambas es pequeña, pero la t de Student captura mejor las colas de la distribución conjunta, lo que puede ser importante para modelar eventos extremos en los precios de los activos financieros. Por lo tanto, se escogería la cópula t de Student como la mejor opción para modelar la dependencia entre los residuales de META y AAPL.
+
+```{r, include=FALSE}
+# Extraemos las copulas ajustadas.
+cop_gauss   <- fit_gauss@copula
+cop_gumbel  <- fit_gumbel@copula
+cop_clayton <- fit_clayton@copula
+cop_frank   <- fit_frank@copula
+
+# Para la t de Student, pCopula necesita grados de libertad enteros.
+param_t <- coef(fit_t)
+
+rho_t <- param_t[1]
+df_t  <- round(param_t[2])
+
+cop_t_CvM <- tCopula(
+  param = rho_t,
+  dim = 2,
+  dispstr = "un",
+  df = df_t,
+  df.fixed = TRUE
+)
+
+# Copula empirica evaluada en cada punto observado.
+Cn <- numeric(nrow(U))
+
+for(i in 1:nrow(U)){
+  Cn[i] <- mean(U[,1] <= U[i,1] & U[,2] <= U[i,2])
+}
+
+# Distancias Cramer-von Mises.
+CvM_gauss <- mean((Cn - pCopula(U, cop_gauss))^2)
+CvM_t <- mean((Cn - pCopula(U, cop_t_CvM))^2)
+CvM_gumbel <- mean((Cn - pCopula(U, cop_gumbel))^2)
+CvM_clayton <- mean((Cn - pCopula(U, cop_clayton))^2)
+CvM_frank <- mean((Cn - pCopula(U, cop_frank))^2)
+
+CvM <- matrix(
+  c(CvM_gauss, CvM_t, CvM_gumbel, CvM_clayton, CvM_frank),
+  ncol = 1
+)
+
+rownames(CvM) <- c("Gaussiana", "t Student", "Gumbel", "Clayton", "Frank")
+colnames(CvM) <- "Cramer_von_Mises"
+
+CvM
+```
+
+
+# Ejercicio 4
+
+Considerando la cópula Gaussiana, sin importar cuál fue la mejor, y su parámetro $\rho$ obtenido vía máxima verosimilitud, junto con la distribución de los residuales, se construye la distribución conjunta de los residuales. Obtenga 200 simulaciones normales estándar bivariadas independientes. Con el método visto en clase genere 200 simulaciones de la cópula Gaussiana con correlación $\rho$.
+
+## Solución
+
+Aunque en el ejercicio anterior se escogió la mejor cópula por distancia de Cramér-von Mises, aquí usamos obligatoriamente la cópula Gaussiana. Su parámetro es la correlación $\rho$ estimada por máxima verosimilitud.
+
+```{r ejercicio4-gaussiana, echo=FALSE}
+rho <- coef(fit_gauss)[1]
+rho
+```
+
+Primero generamos 200 normales estándar bivariadas independientes. Después inducimos correlación usando la matriz de correlación
+
+$$
+\Sigma =
+\begin{pmatrix}
+1 & \rho \\
+\rho & 1
+\end{pmatrix}.
+$$
+
+Finalmente aplicamos la función de distribución normal estándar componente a componente para obtener una muestra de la cópula Gaussiana.
+
+```{r include=FALSE}
+B <- 200
+
+# 200 simulaciones normales estándar bivariadas independientes.
+Z_ind <- matrix(rnorm(2*B), ncol = 2)
+colnames(Z_ind) <- c("Z1_ind", "Z2_ind")
+
+# Matriz de correlación gaussiana.
+Sigma <- matrix(c(1, rho, rho, 1), nrow = 2, byrow = TRUE)
+
+# Inducimos correlación usando la descomposición de Cholesky.
+Z_corr <- Z_ind %*% chol(Sigma)
+colnames(Z_corr) <- c("Z1_corr", "Z2_corr")
+
+# Transformamos a uniformes para obtener muestra de la cópula Gaussiana.
+U_gauss <- pnorm(Z_corr)
+colnames(U_gauss) <- c("U_META", "U_AAPL")
+cor(Z_corr)
+cor(U_gauss)
+```
+
+```{r echo=FALSE, fig.height=5, fig.width=6}
+plot(U_gauss[,1], U_gauss[,2],
+     xlab = "U_META", ylab = "U_AAPL",
+     main = "Simulaciones de la cópula Gaussiana")
+```
+
+# Ejercicio 5
+
+Basado en dicha muestra genere 200 simulaciones de los residuales y 200 simulaciones de los precios originales. Considerando estas últimas calcule el VaR(95%) de un portafolio compuesto por 20% de acciones del primer activo y 80% del segundo.
+
+## Solución
+
+Tomamos las uniformes simuladas de la cópula Gaussiana y las transformamos a residuales usando los cuantiles empíricos de los residuales estandarizados de cada activo.
+
+```{r include=FALSE}
+resid_meta_sim <- as.numeric(quantile(z_meta, probs = U_gauss[,1], type = 8))
+resid_aapl_sim <- as.numeric(quantile(z_aapl, probs = U_gauss[,2], type = 8))
+
+residuales_simulados <- cbind(resid_meta_sim, resid_aapl_sim)
+colnames(residuales_simulados) <- c("Residual_META", "Residual_AAPL")
+```
+
+Para pasar de residuales simulados a rendimientos simulados se usa el pronóstico a un paso de cada modelo ARMA-GARCH:
+
+$$
+R_{t+1}^{(sim)} = \widehat{\mu}_{t+1} + \widehat{\sigma}_{t+1} z_{t+1}^{(sim)}.
+$$
+
+Después recuperamos precios mediante
+
+$$
+P_{t+1}^{(sim)} = P_t \exp(R_{t+1}^{(sim)}).
+$$
+
+```{r include=FALSE}
+fc_meta <- ugarchforecast(fit_meta, n.ahead = 1)
+fc_aapl <- ugarchforecast(fit_aapl, n.ahead = 1)
+
+mu_meta <- as.numeric(fitted(fc_meta))[1]
+sigma_meta <- as.numeric(sigma(fc_meta))[1]
+
+mu_aapl <- as.numeric(fitted(fc_aapl))[1]
+sigma_aapl <- as.numeric(sigma(fc_aapl))[1]
+
+rend_meta_sim <- mu_meta + sigma_meta * resid_meta_sim
+rend_aapl_sim <- mu_aapl + sigma_aapl * resid_aapl_sim
+
+precio_meta_0 <- tail(precios_meta, 1)
+precio_aapl_0 <- tail(precios_aapl, 1)
+
+precio_meta_sim <- precio_meta_0 * exp(rend_meta_sim)
+precio_aapl_sim <- precio_aapl_0 * exp(rend_aapl_sim)
+
+precios_simulados <- cbind(precio_meta_sim, precio_aapl_sim)
+colnames(precios_simulados) <- c("Precio_META_sim", "Precio_AAPL_sim")
+```
+
+El portafolio tiene 20% en META y 80% en AAPL. Trabajamos con pérdidas porcentuales simuladas:
+
+\[
+L = -\bigl(0.20R_{META}+0.80R_{AAPL}\bigr).
+\]
+
+El VaR al 95% es el percentil 95 de las pérdidas simuladas.
+
+```{r ejercicio5-var, include=FALSE}
+peso_meta <- 0.20
+peso_aapl <- 0.80
+
+rend_portafolio_sim <- peso_meta * rend_meta_sim + peso_aapl * rend_aapl_sim
+perdida_portafolio_sim <- -rend_portafolio_sim
+
+VaR_95 <- as.numeric(quantile(perdida_portafolio_sim, probs = 0.95, type = 8))
+```
+
+Si se invierte un capital inicial de 1 unidad monetaria, el VaR anterior se interpreta como pérdida porcentual aproximada. Por ejemplo, para un capital de 1000 dólares, la estimación es: 
+
+```{r echo=FALSE}
+capital <- 1000
+VaR_monetario <- capital * VaR_95
+VaR_monetario
+```
+Finalmente, se grafica el histograma de las pérdidas simuladas del portafolio, indicando con una línea vertical discontinua el valor del VaR al 95%.
+
+```{r echo=FALSE, fig.height=5, fig.width=7}
+hist(perdida_portafolio_sim,
+     breaks = 25,
+     main = "Pérdidas simuladas del portafolio",
+     xlab = "Pérdida simulada")
+abline(v = VaR_95, lty = 2, lwd = 2)
+```
+
+El valor obtenido representa una estimación de la pérdida que no se excedería con probabilidad aproximada de 95%, bajo el modelo ARMA-GARCH marginal y la cópula Gaussiana usada para simular la dependencia entre los dos activos.
 
 
